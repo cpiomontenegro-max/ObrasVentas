@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rinde Abril 2026 · Club</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --surface2: #f9f9f9;
+    --surface3: #f0f0f0;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --accent2: #1a1a1a;
+    --green: #16a34a;
+    --red: #dc2626;
+    --text: #111111;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --border2: #eeeeee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Header */
+  header {
+    padding: 0 24px;
+    border-bottom: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #111111;
+    position: sticky; top:0; z-index:10;
+    height: 58px;
+  }
+  .logo-wrap { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .logo-dot { display: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .header-titles { display: flex; flex-direction: column; gap: 1px; }
+  header h1 { font-size: 0.95rem; font-weight: 900; letter-spacing: 0.08em; color: #ffffff; text-transform: uppercase; }
+  header h1 span { color: var(--accent); }
+  .header-sub { font-size: 0.6rem; color: #888888; letter-spacing: 0.1em; text-transform: uppercase; }
+  .club-badge {
+    margin-left: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #111111;
+    background: var(--accent);
+    padding: 5px 14px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  /* Main layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    flex: 1;
+    height: calc(100vh - 57px);
+    overflow: hidden;
+  }
+  /* Sidebar */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #ffffff;
+  }
+  .sidebar-title {
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 0 2px 8px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 2px;
+  }
+  /* Totals row */
+  .totals-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .total-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    border-top: 3px solid #16a34a;
+  }
+  .total-card.gastos {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    border-top-color: var(--accent);
+  }
+  .total-label { font-size: 0.55rem; letter-spacing: 0.12em; color: var(--muted); text-transform:uppercase; font-weight:700; margin-bottom: 4px; }
+  .total-value { font-family: 'Space Mono', monospace; font-size: 0.85rem; font-weight:700; }
+  .total-value.ventas { color: var(--green); }
+  .total-value.gastos { color: var(--accent); }
+  /* Cat cards */
+  .cat-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.12);
+  }
+  .cat-card.active {
+    border-color: var(--accent);
+    border-left: 3px solid var(--accent);
+    background: #eff6ff;
+  }
+  .cat-card.disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+  .cat-name { font-size: 0.8rem; font-weight: 700; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .cat-icon { font-size: 0.8rem; }
+  .cat-bar-wrap { height: 3px; background: #f3f4f6; border-radius: 2px; margin: 5px 0; }
+  .cat-bar { height: 3px; border-radius: 2px; background: var(--accent); transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+  .cat-stats { display:flex; justify-content:space-between; align-items: center; }
+  .cat-monto { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--text); font-weight: 700; }
+  .cat-pct { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); background: #f3f4f6; padding: 1px 5px; border-radius: 3px; }
+  /* Chat area */
+  .chat-area { display: flex; flex-direction: column; overflow: hidden; background: #f9f9f9; }
+  .messages {
+    flex: 1; overflow-y: auto;
+    padding: 20px 28px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .message { display: flex; gap: 10px; max-width: 820px; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+  .message.user { align-self: flex-end; flex-direction: row-reverse; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items:center; justify-content:center;
+    font-size: 0.85rem; flex-shrink:0; font-weight:800;
+  }
+  .avatar.ai { background: #111111; color: white; }
+  .avatar.user { background: var(--accent); color: white; }
+  .bubble {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.87rem;
+    line-height: 1.65;
+    color: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .message.user .bubble { background: var(--accent); color: white; border-color: var(--accent); }
+  .bubble table { width:100%; border-collapse:collapse; margin-top: 10px; }
+  .bubble th { font-size: 0.65rem; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; text-align:left; padding: 5px 8px; border-bottom: 2px solid var(--border); font-weight:700; }
+  .bubble td { font-family:'Space Mono',monospace; font-size:0.75rem; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  .bubble td.monto { color: var(--green); font-weight:700; }
+  .bubble td.rank { color: var(--accent); font-weight:700; }
+  .bubble .highlight { color: var(--accent); font-weight:700; }
+  .bubble .tip { margin-top:8px; font-size:0.78rem; color:var(--muted); border-top: 1px solid var(--border); padding-top:8px; }
+  /* Input */
+  .input-area {
+    padding: 12px 28px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; background: #ffffff;
+  }
+  .suggestions { padding: 0 28px 10px; display: flex; flex-wrap: wrap; gap: 6px; background: #ffffff; border-bottom: 1px solid var(--border); }
+  .suggestion-btn {
+    font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight:600;
+    background: #f5f5f5; border: 1px solid var(--border);
+    color: var(--muted); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s;
+  }
+  .suggestion-btn:hover { border-color: var(--accent); color: var(--accent); background: #eff6ff; }
+  input[type=text] {
+    flex: 1; background: #f5f5f5; border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 16px; color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 0.88rem; outline: none; transition: all 0.15s;
+  }
+  input[type=text]:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+  input[type=text]::placeholder { color: #aaa; }
+  .send-btn {
+    background: var(--accent); color: white; border: none; border-radius: 8px;
+    padding: 10px 20px; font-family: 'Inter', sans-serif;
+    font-weight: 800; font-size: 0.82rem; cursor: pointer; transition: all 0.15s;
+    white-space: nowrap; letter-spacing: 0.03em; text-transform: uppercase;
+  }
+  .send-btn:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+  .typing { display: flex; gap: 5px; align-items:center; padding: 8px 4px; }
+  .typing span { width:7px; height:7px; border-radius:50%; background: var(--accent); animation: bounce 1.2s infinite; }
+  .typing span:nth-child(2){animation-delay:0.2s} .typing span:nth-child(3){animation-delay:0.4s}
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #f5f5f5; }
+  ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #ccc; }
+
+  /* Modales */
+  .cocina-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 100;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .cocina-overlay.open { display: flex; }
+  .cocina-modal {
+    background: #ffffff;
+    border-radius: 12px; padding: 24px; width: 92%; max-width: 480px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: modalIn 0.2s cubic-bezier(0.34,1.4,0.64,1);
+    border-top: 4px solid var(--accent);
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.95) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .cocina-modal h2 {
+    font-size: 1rem; font-weight: 900; color: var(--text);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--border);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .cocina-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.84rem;
+  }
+  .cocina-label { color: var(--muted); font-weight: 500; }
+  .cocina-val { font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; }
+  .cocina-val.green { color: var(--green); }
+  .cocina-val.orange { color: var(--accent); }
+  .cocina-val.red { color: var(--red); }
+  .alerta-box { margin: 12px 0; padding: 10px 14px; border-radius: 8px; font-size: 0.8rem; line-height: 1.55; font-weight: 500; }
+  .alerta-ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); }
+  .alerta-warn { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+  .pagos-list { max-height: 130px; overflow-y: auto; margin: 6px 0; }
+  .pagos-list-row {
+    display: flex; justify-content: space-between; padding: 5px 0;
+    border-bottom: 1px solid var(--border); font-size: 0.72rem; color: var(--muted);
+    gap: 8px;
+  }
+  .pagos-list-row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pagos-list-row span:last-child { font-family: 'Space Mono', monospace; color: var(--text); flex-shrink: 0; font-weight: 700; }
+  .mensaje-box {
+    margin-top: 12px; background: #f9f9f9; border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+    font-family: 'Space Mono', monospace; font-size: 0.71rem; line-height: 1.75;
+    color: var(--text); white-space: pre-wrap;
+  }
+  .copy-btn {
+    margin-top: 10px; width: 100%; padding: 11px;
+    background: var(--accent); color: white; border: none; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-weight: 800; font-size: 0.82rem; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .copy-btn:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+  .close-modal-btn {
+    margin-top: 8px; width: 100%; padding: 9px; background: transparent;
+    color: var(--muted); border: 1px solid var(--border); border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; font-weight: 600;
+  }
+  .close-modal-btn:hover { color: var(--text); border-color: #999; background: #f5f5f5; }
+  .modal-section-title {
+    font-size: 0.58rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--muted); font-weight: 800; margin: 14px 0 6px;
+    padding-bottom: 4px; border-bottom: 2px solid var(--border);
+  }
+  .balance-total {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px; border-radius: 8px; margin-top: 12px;
+    background: #111111; border: none;
+  }
+  .balance-total .label { font-size: 0.8rem; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 0.05em; }
+  .balance-total .val { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; }
+  .balance-total .val.green { color: #4ade80; }
+  .balance-total .val.red { color: #f87171; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">🏟️</div>
+    <div class="logo-dot"></div>
+  </div>
+  <div class="header-titles">
+    <h1>RINDE <span>ABRIL 2026</span></h1>
+    <div class="header-sub">Obras Sanitarias SDE</div>
+  </div>
+  <span class="club-badge">OBRAS SANITARIAS</span>
+</header>
+
+<!-- Modal Compras -->
+<div class="cocina-overlay" id="comprasOverlay" onclick="if(event.target===this)cerrarModal('comprasOverlay')">
+  <div class="cocina-modal">
+    <h2>🛒 Balance Mercadería</h2>
+    <div id="comprasContenido"></div>
+    <button class="close-modal-btn" onclick="cerrarModal('comprasOverlay')">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal Turnos -->
+<div class="cocina-overlay" id="turnosOverlay" onclick="if(event.target===this)cerrarModal('turnosOverlay')">
+  <div class="cocina-modal">
+    <h2>🏟️ Turnos & Alquileres</h2>
+    <div id="turnosContenido"></div>
+    <button class="close-modal-btn" onclick="cerrarModal('turnosOverlay')">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal CARNES -->
+<div class="cocina-overlay" id="carnesOverlay" onclick="if(event.target===this)cerrarModal('carnesOverlay')">
+  <div class="cocina-modal">
+    <h2>🥩 Balance CARNES</h2>
+    <div id="carnesContenido"></div>
+    <button class="close-modal-btn" onclick="cerrarModal('carnesOverlay')">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal Inversion -->
+<div class="cocina-overlay" id="inversionOverlay" onclick="if(event.target===this)cerrarModal('inversionOverlay')">
+  <div class="cocina-modal">
+    <h2>💰 Inversión</h2>
+    <div id="inversionContenido"></div>
+    <button class="close-modal-btn" onclick="cerrarModal('inversionOverlay')">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal Cafeteria -->
+<div class="cocina-overlay" id="cafeteriaOverlay" onclick="if(event.target===this)cerrarModal('cafeteriaOverlay')">
+  <div class="cocina-modal">
+    <h2>☕ Balance Cafetería</h2>
+    <div id="cafeteriaContenido"></div>
+    <button class="close-modal-btn" onclick="cerrarModal('cafeteriaOverlay')">Cerrar</button>
+  </div>
+</div>
+
+<!-- Modal Cocina -->
+<div class="cocina-overlay" id="cocinaOverlay" onclick="if(event.target===this)cerrarCocina()">
+  <div class="cocina-modal">
+    <h2>🍳 Rendición Cocina</h2>
+    <div id="cocinaContenido"></div>
+    <button class="close-modal-btn" onclick="cerrarCocina()">Cerrar</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar con resumen de categorías -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-title">Ventas por Rubro</div>
+    <div id="catCards"></div>
+  </aside>
+
+  <!-- Chat -->
+  <div class="chat-area">
+    <div class="messages" id="messages"></div>
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuál fue el resultado neto de abril?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuánto gasté en sueldos?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuáles son los rubros más vendidos?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuánto gasté en compras de mercadería?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">Top 5 productos más vendidos</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuál fue mi mayor gasto del mes?</button>
+      <button class="suggestion-btn" onclick="sendSuggestion(this, 'Hacé la rendición de cocina: mostrá el total vendido por el rubro Cocina, detallá los gastos de cocina del mes, calculá el resultado neto de cocina y aplicá una comisión del 10% sobre las ventas de cocina. Indicá claramente el monto a cobrar como comisión.')">Rendición de cocina (comisión 10%)</button>
+    </div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Preguntá sobre tus ventas..." onkeydown="if(event.key==='Enter') sendMessage()" />
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATOS GASTOS ─────────────────────────────────────────────────────
+const GASTOS = [{"Id": 1547, "Fecha": "2026-03-31", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea coca", "Importe": 220243.46}, {"Id": 1548, "Fecha": "2026-03-31", "Proveedor": "Cachito y José (Mayorista Norte)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición vinos", "Importe": 142200.01}, {"Id": 1549, "Fecha": "2026-04-01", "Proveedor": "YPF Autopista", "Categoría": "Compra", "Subcategoría": "", "Comentario": "combustible", "Importe": 20000.0}, {"Id": 1550, "Fecha": "2026-04-01", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "pago de materiales eléctricos ", "Importe": 510150.0}, {"Id": 1551, "Fecha": "2026-04-01", "Proveedor": "CENOA (BAISE Distribuciones)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Heineken", "Importe": 271310.51}, {"Id": 1552, "Fecha": "2026-04-01", "Proveedor": "Lo de AGUKO (Triples miga)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion migas", "Importe": 32000.0}, {"Id": 1553, "Fecha": "2026-04-02", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 49000.0}, {"Id": 1554, "Fecha": "2026-04-01", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "se abona sueldo semanal", "Importe": 134100.0}, {"Id": 1555, "Fecha": "2026-03-30", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "parte del sueldo semanal en efectivo", "Importe": 30000.0}, {"Id": 1556, "Fecha": "2026-03-30", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "parte del sueldo semanal en efectivo", "Importe": 30000.0}, {"Id": 1557, "Fecha": "2026-03-30", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "parte del sueldo semanal en efectivo", "Importe": 30000.0}, {"Id": 1558, "Fecha": "2026-03-30", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "parte del sueldo semanal en efectivo", "Importe": 50000.0}, {"Id": 1559, "Fecha": "2026-04-02", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea coca", "Importe": 207826.08}, {"Id": 1560, "Fecha": "2026-04-02", "Proveedor": "CENOA (BAISE Distribuciones)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Heineken", "Importe": 59365.38}, {"Id": 1561, "Fecha": "2026-04-03", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona cocina por el día 02/04/2026", "Importe": 255000.0}, {"Id": 1562, "Fecha": "2026-04-03", "Proveedor": "Hielos Bajo Zero", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposicion de 15 bolsas de hielo chicas", "Importe": 33000.0}, {"Id": 1563, "Fecha": "2026-04-04", "Proveedor": "Galvan Felipe (Sereno)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Se abona sueldo mas dos horas todos los dias + feriados trabajados", "Importe": 184000.0}, {"Id": 1564, "Fecha": "2026-04-04", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona la cocina del dia", "Importe": 108000.0}, {"Id": 1565, "Fecha": "2026-04-04", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Se compro tornillos para los ventiladores", "Importe": 4000.0}, {"Id": 1566, "Fecha": "2026-04-04", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Sueldo semanal mas dos feriados trabajados", "Importe": 204000.0}, {"Id": 1567, "Fecha": "2026-04-04", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Se descuenta cuota 4/6", "Importe": 174000.0}, {"Id": 1568, "Fecha": "2026-04-04", "Proveedor": "Jorge, auxiliar", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Se abona el dia trabajado.", "Importe": 20000.0}, {"Id": 1569, "Fecha": "2026-04-04", "Proveedor": "Lo de AGUKO (Triples miga)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion migas", "Importe": 40000.0}, {"Id": 1570, "Fecha": "2026-04-04", "Proveedor": "Gomez William, mantenimiento", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "se abona sueldo semanal con los descuentos correspondientes", "Importe": 142000.0}, {"Id": 1571, "Fecha": "2026-04-04", "Proveedor": "Panificadora Kuresza", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion panificados", "Importe": 33600.0}, {"Id": 1572, "Fecha": "2026-04-05", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona cocina del dia", "Importe": 17000.0}, {"Id": 1573, "Fecha": "2026-04-04", "Proveedor": "Quilpe Distribuciones S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición linea Pepsi", "Importe": 492939.57}, {"Id": 1574, "Fecha": "2026-04-04", "Proveedor": "La Reina del Maní ( Natalia)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición snacks", "Importe": 82000.0}, {"Id": 1575, "Fecha": "2026-04-05", "Proveedor": "Gomez Oscar ( Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Se abona una parte del sueldo por semana trabajada", "Importe": 100000.0}, {"Id": 1576, "Fecha": "2026-04-06", "Proveedor": "Federico Orellana", "Categoría": "Inversión", "Subcategoría": "", "Comentario": "Recupero", "Importe": 5000000.0}, {"Id": 1577, "Fecha": "2026-04-06", "Proveedor": "Pio Montenegro", "Categoría": "Inversión", "Subcategoría": "", "Comentario": "Recupero", "Importe": 5000000.0}, {"Id": 1578, "Fecha": "2026-04-06", "Proveedor": "Gomez Oscar ( Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "saldo del sueldo semanal", "Importe": 114500.0}, {"Id": 1579, "Fecha": "2026-04-06", "Proveedor": "Todo Pymes SRL (Vitalissima)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "pago aguas del 11-03-26", "Importe": 397141.7}, {"Id": 1580, "Fecha": "2026-04-06", "Proveedor": "Quilpe Distribuciones S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Pepsi", "Importe": 370169.0}, {"Id": 1581, "Fecha": "2026-03-31", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 101620.0}, {"Id": 1582, "Fecha": "2026-03-31", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 248073.51}, {"Id": 1583, "Fecha": "2026-03-31", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 173553.51}, {"Id": 1584, "Fecha": "2026-03-31", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 248073.51}, {"Id": 1585, "Fecha": "2026-04-03", "Proveedor": "Gomez Oscar ( Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto de sueldo a Oscar descontar en 5 cuotas", "Importe": 250000.0}, {"Id": 1586, "Fecha": "2026-04-04", "Proveedor": "Ferretería Besares Srl", "Categoría": "Compra", "Subcategoría": "", "Comentario": "compra de mangueras y aspersores", "Importe": 123088.0}, {"Id": 1587, "Fecha": "2026-04-04", "Proveedor": "Emanuel Guerra", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "pozo cantina", "Importe": 250000.0}, {"Id": 1588, "Fecha": "2026-03-30", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal", "Importe": 29520.0}, {"Id": 1589, "Fecha": "2026-03-30", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock", "Importe": 18120.0}, {"Id": 1590, "Fecha": "2026-03-30", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal", "Importe": 9480.0}, {"Id": 1591, "Fecha": "2026-03-30", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock", "Importe": 18120.0}, {"Id": 1592, "Fecha": "2026-03-30", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal", "Importe": 240.0}, {"Id": 1593, "Fecha": "2026-03-30", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock", "Importe": 18120.0}, {"Id": 1594, "Fecha": "2026-03-30", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal", "Importe": 8880.0}, {"Id": 1595, "Fecha": "2026-03-30", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por stock semanal", "Importe": 6040.0}, {"Id": 1596, "Fecha": "2026-04-06", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "compra de cinta ancha", "Importe": 3200.0}, {"Id": 1597, "Fecha": "2026-04-07", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 25000.0}, {"Id": 1598, "Fecha": "2026-04-07", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto", "Importe": 15000.0}, {"Id": 1599, "Fecha": "2026-04-08", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 10000.0}, {"Id": 1600, "Fecha": "2026-04-08", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto", "Importe": 200000.0}, {"Id": 1601, "Fecha": "2026-04-07", "Proveedor": "La Sante, Joaquín Ledesma (Mix Frutos)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición snacks saludables", "Importe": 42300.0}, {"Id": 1602, "Fecha": "2026-04-08", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto de sueldo", "Importe": 200000.0}, {"Id": 1603, "Fecha": "2026-04-08", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Compra de clavos, alambre y fajas de presión", "Importe": 37000.0}, {"Id": 1604, "Fecha": "2026-04-08", "Proveedor": "Neron", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion accesorios padel", "Importe": 490580.0}, {"Id": 1605, "Fecha": "2026-04-06", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto de sueldo en efectivo", "Importe": 39000.0}, {"Id": 1606, "Fecha": "2026-04-06", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto sueldo", "Importe": 46000.0}, {"Id": 1607, "Fecha": "2026-04-06", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "se abona sueldo", "Importe": 112000.0}, {"Id": 1608, "Fecha": "2026-04-06", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock", "Importe": 24090.0}, {"Id": 1609, "Fecha": "2026-04-06", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal menos 20%", "Importe": 13360.0}, {"Id": 1610, "Fecha": "2026-04-06", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock semanal", "Importe": 24090.0}, {"Id": 1611, "Fecha": "2026-04-06", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal", "Importe": 11118.4}, {"Id": 1612, "Fecha": "2026-04-06", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock semanal", "Importe": 24090.0}, {"Id": 1613, "Fecha": "2026-04-06", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal", "Importe": 16240.0}, {"Id": 1614, "Fecha": "2026-04-06", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por consumo personal", "Importe": 4800.0}, {"Id": 1615, "Fecha": "2026-04-06", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "por ajuste de stock", "Importe": 8030.0}, {"Id": 1616, "Fecha": "2026-04-09", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona cocina del día miércoles 08/04/2026", "Importe": 65000.0}, {"Id": 1617, "Fecha": "2026-04-08", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Se abona sueldo semanal", "Importe": 119000.0}, {"Id": 1618, "Fecha": "2026-04-08", "Proveedor": "Tomassone Pochoclos", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Por reposición de pochoclos", "Importe": 14000.0}, {"Id": 1619, "Fecha": "2026-04-07", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición linea coca", "Importe": 309965.1}, {"Id": 1620, "Fecha": "2026-04-09", "Proveedor": "Ramon Paz", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "arreglo de caños", "Importe": 30000.0}, {"Id": 1621, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "compra de tornillos", "Importe": 3000.0}, {"Id": 1622, "Fecha": "2026-04-09", "Proveedor": "Juan Manuel Alfredo (Limpieza)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "se abona factura anterior y se recibe nuevo pedido", "Importe": 203900.0}, {"Id": 1623, "Fecha": "2026-04-09", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea coca", "Importe": 134300.0}, {"Id": 1624, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "materiales para estantes de cantina", "Importe": 93519.87}, {"Id": 1625, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Infraestructuras", "Subcategoría": "", "Comentario": "se abona IVA de vidrio", "Importe": 147000.0}, {"Id": 1626, "Fecha": "2026-04-08", "Proveedor": "Diaz Angel, electricista ", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "colocación de 2 llaves tomas para heladeras", "Importe": 30000.0}, {"Id": 1627, "Fecha": "2026-04-08", "Proveedor": "Lo Bruno S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "arena y cemento", "Importe": 55307.78}, {"Id": 1628, "Fecha": "2026-04-07", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "se abona sueldo semanal", "Importe": 177203.35}, {"Id": 1629, "Fecha": "2026-04-10", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "", "Importe": 23000.0}, {"Id": 1630, "Fecha": "2026-04-10", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 87000.0}, {"Id": 1631, "Fecha": "2026-04-10", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "cadete que trajo carne", "Importe": 5000.0}, {"Id": 1632, "Fecha": "2026-04-10", "Proveedor": "Lo de AGUKO (Triples miga)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion sandwichs de miga", "Importe": 96000.0}, {"Id": 1633, "Fecha": "2026-04-10", "Proveedor": "Gomez William, mantenimiento", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto de sueldo", "Importe": 150000.0}, {"Id": 1634, "Fecha": "2026-04-10", "Proveedor": "CENOA (BAISE Distribuciones)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion linea Heineken", "Importe": 100000.0}, {"Id": 1635, "Fecha": "2026-04-10", "Proveedor": "Todo Pymes SRL (Vitalissima)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion aguas", "Importe": 46504.0}, {"Id": 1636, "Fecha": "2026-04-11", "Proveedor": "Galvan Felipe (Sereno)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "", "Importe": 120000.0}, {"Id": 1637, "Fecha": "2026-04-11", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 282000.0}, {"Id": 1638, "Fecha": "2026-04-11", "Proveedor": "Galvan Felipe (Sereno)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "", "Importe": 18000.0}, {"Id": 1639, "Fecha": "2026-04-11", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo trabajado + horas de sereno", "Importe": 140500.0}, {"Id": 1640, "Fecha": "2026-04-11", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo de semana trabajada", "Importe": 144000.0}, {"Id": 1641, "Fecha": "2026-04-11", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposicion de la linea coca.", "Importe": 202000.0}, {"Id": 1642, "Fecha": "2026-04-11", "Proveedor": "Gomez William, mantenimiento", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo de semana trabajada", "Importe": 94000.0}, {"Id": 1643, "Fecha": "2026-04-11", "Proveedor": "Jorge, auxiliar", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "", "Importe": 20000.0}, {"Id": 1644, "Fecha": "2026-04-11", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 21000.0}, {"Id": 1645, "Fecha": "2026-04-11", "Proveedor": "Lurini SRL (Arcor)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición golosinas Arcor", "Importe": 191825.28}, {"Id": 1646, "Fecha": "2026-04-11", "Proveedor": "Santiago Aza", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición golosinas", "Importe": 274715.72}, {"Id": 1647, "Fecha": "2026-04-12", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "", "Importe": 20000.0}, {"Id": 1648, "Fecha": "2026-04-11", "Proveedor": "Panificadora Kuresza", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición panificados", "Importe": 18400.0}, {"Id": 1649, "Fecha": "2026-04-12", "Proveedor": "Snacks L&G Crunch", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion garrapiñada", "Importe": 21000.0}, {"Id": 1650, "Fecha": "2026-04-12", "Proveedor": "Panificadora Kuresza", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion panificados", "Importe": 27400.0}, {"Id": 1651, "Fecha": "2026-04-13", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona la cocina del dia.", "Importe": 129000.0}, {"Id": 1652, "Fecha": "2026-04-13", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Se abona el dia trabajo.", "Importe": 24000.0}, {"Id": 1653, "Fecha": "2026-04-13", "Proveedor": "Gomez Oscar ( Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo por mantenimiento", "Importe": 94000.0}, {"Id": 1654, "Fecha": "2026-04-14", "Proveedor": "Quilpe Distribuciones S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Pepsi", "Importe": 180931.4}, {"Id": 1655, "Fecha": "2026-04-14", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto.", "Importe": 50000.0}, {"Id": 1656, "Fecha": "2026-04-14", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 45000.0}, {"Id": 1657, "Fecha": "2026-04-14", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto", "Importe": 15000.0}, {"Id": 1658, "Fecha": "2026-04-14", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Coca", "Importe": 189038.7}, {"Id": 1659, "Fecha": "2026-04-14", "Proveedor": "El CARNES S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "se abona cuenta del CARNES", "Importe": 299035.2}, {"Id": 1660, "Fecha": "2026-04-13", "Proveedor": "Capsulandia ", "Categoría": "Compra", "Subcategoría": "", "Comentario": "se abona pedido nuevo de capsulas", "Importe": 113999.0}, {"Id": 1661, "Fecha": "2026-04-13", "Proveedor": "Neron", "Categoría": "Compra", "Subcategoría": "", "Comentario": "factura Neron pendiente", "Importe": 342080.0}, {"Id": 1662, "Fecha": "2026-04-13", "Proveedor": "Carnes El Triunfo", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición de carnes para club", "Importe": 316400.0}, {"Id": 1663, "Fecha": "2026-04-11", "Proveedor": "CENOA (BAISE Distribuciones)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "saldo reposición línea Heineken", "Importe": 121077.64}, {"Id": 1664, "Fecha": "2026-04-10", "Proveedor": "Valente Norberto, herrero", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "tachos y muebles para cantina", "Importe": 100000.0}, {"Id": 1665, "Fecha": "2026-04-09", "Proveedor": "Claro", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "pago celular de mantenimiento", "Importe": 11823.0}, {"Id": 1666, "Fecha": "2026-04-09", "Proveedor": "Benjamín Barraza", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "pago a Benjamín", "Importe": 380000.0}, {"Id": 1667, "Fecha": "2026-04-09", "Proveedor": "FUDO", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono de sistema Fudo", "Importe": 44000.0}, {"Id": 1668, "Fecha": "2026-04-09", "Proveedor": "Starlink", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "internet para club", "Importe": 62500.0}, {"Id": 1669, "Fecha": "2026-04-15", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona cocina del dia", "Importe": 65000.0}, {"Id": 1670, "Fecha": "2026-04-15", "Proveedor": "Diaz Angel, electricista ", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "cambio de tubos de quincho y cantina", "Importe": 65000.0}, {"Id": 1671, "Fecha": "2026-04-13", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 129053.8}, {"Id": 1672, "Fecha": "2026-04-13", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock 30%", "Importe": 24840.0}, {"Id": 1673, "Fecha": "2026-04-13", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 6560.0}, {"Id": 1674, "Fecha": "2026-04-13", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 128804.6}, {"Id": 1675, "Fecha": "2026-04-13", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock 10%", "Importe": 8280.0}, {"Id": 1676, "Fecha": "2026-04-13", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 1400.0}, {"Id": 1677, "Fecha": "2026-04-13", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal administrativo", "Importe": 118800.0}, {"Id": 1678, "Fecha": "2026-04-13", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 38400.0}, {"Id": 1679, "Fecha": "2026-04-13", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock 30%", "Importe": 24840.0}, {"Id": 1680, "Fecha": "2026-04-13", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock 30%", "Importe": 24840.0}, {"Id": 1681, "Fecha": "2026-04-13", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 15200.0}, {"Id": 1682, "Fecha": "2026-04-13", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 56000.0}, {"Id": 1683, "Fecha": "2026-04-09", "Proveedor": "App Donde Juego", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono de app", "Importe": 46000.0}, {"Id": 1684, "Fecha": "2026-04-09", "Proveedor": "Seguro Club", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono seguro de club", "Importe": 74315.0}, {"Id": 1685, "Fecha": "2026-04-09", "Proveedor": "Seguro Empleados ", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono seguro de empleados", "Importe": 19500.0}, {"Id": 1686, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono mantenimiento", "Importe": 11823.0}, {"Id": 1687, "Fecha": "2026-04-09", "Proveedor": "Bidcom", "Categoría": "Inversión", "Subcategoría": "", "Comentario": "6 de 6 cámaras", "Importe": 88900.0}, {"Id": 1688, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Inversión", "Subcategoría": "", "Comentario": "4 de 6 por moto guadaña", "Importe": 50000.0}, {"Id": 1689, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Inversión", "Subcategoría": "", "Comentario": "4 de 6 por cortadora", "Importe": 133333.0}, {"Id": 1690, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono obras", "Importe": 12500.0}, {"Id": 1691, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "abono YouTube", "Importe": 6000.0}, {"Id": 1692, "Fecha": "2026-04-09", "Proveedor": "Varios", "Categoría": "Inversión", "Subcategoría": "", "Comentario": "cuota 1 de 6 hielera para club", "Importe": 42566.0}, {"Id": 1693, "Fecha": "2026-04-15", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Compra de envases de coca", "Importe": 30000.0}, {"Id": 1694, "Fecha": "2026-04-16", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona la cocina del dia", "Importe": 26000.0}, {"Id": 1695, "Fecha": "2026-04-16", "Proveedor": "La Sante, Joaquín Ledesma (Mix Frutos)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición de snacks saludables", "Importe": 29400.0}, {"Id": 1696, "Fecha": "2026-04-16", "Proveedor": "Siubon SRL", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición de helados", "Importe": 262940.0}, {"Id": 1697, "Fecha": "2026-04-16", "Proveedor": "La Reina del Maní ( Natalia)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición snacks", "Importe": 68000.0}, {"Id": 1698, "Fecha": "2026-04-16", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Compra de cadena para motosierra", "Importe": 60000.0}, {"Id": 1699, "Fecha": "2026-04-16", "Proveedor": "Hielos Bajo Zero", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposicion de bolsas de hielo chicas.", "Importe": 33600.0}, {"Id": 1701, "Fecha": "2026-04-16", "Proveedor": "Quilpe Distribuciones S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Pepsi", "Importe": 272807.48}, {"Id": 1703, "Fecha": "2026-04-17", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 116000.0}, {"Id": 1704, "Fecha": "2026-04-18", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 72000.0}, {"Id": 1705, "Fecha": "2026-04-18", "Proveedor": "Galvan Felipe (Sereno)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 138000.0}, {"Id": 1706, "Fecha": "2026-04-18", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto", "Importe": 30000.0}, {"Id": 1707, "Fecha": "2026-04-18", "Proveedor": "Lo de AGUKO (Triples miga)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion sanguchitos", "Importe": 48000.0}, {"Id": 1708, "Fecha": "2026-04-18", "Proveedor": "Jorge, auxiliar", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "mantenimiento auxiliar", "Importe": 20000.0}, {"Id": 1709, "Fecha": "2026-04-19", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición linea coca", "Importe": 157956.76}, {"Id": 1710, "Fecha": "2026-04-19", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 127500.0}, {"Id": 1711, "Fecha": "2026-04-19", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "tareas de mantenimiento", "Importe": 72000.0}, {"Id": 1712, "Fecha": "2026-04-19", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "cocina sabado 18/04", "Importe": 54000.0}, {"Id": 1713, "Fecha": "2026-04-19", "Proveedor": "Gomez William, mantenimiento", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 114700.0}, {"Id": 1714, "Fecha": "2026-04-19", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Arreglo de motosierra", "Importe": 25000.0}, {"Id": 1715, "Fecha": "2026-04-19", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Compra de saquitos de café y azucar", "Importe": 5100.0}, {"Id": 1716, "Fecha": "2026-04-19", "Proveedor": "Tomassone Pochoclos", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición de pochoclos", "Importe": 14000.0}, {"Id": 1717, "Fecha": "2026-04-20", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 24000.0}, {"Id": 1718, "Fecha": "2026-04-20", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto de sueldo.", "Importe": 30000.0}, {"Id": 1719, "Fecha": "2026-04-21", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "noche de sereno", "Importe": 35000.0}, {"Id": 1720, "Fecha": "2026-04-21", "Proveedor": "Gomez Oscar ( Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 94000.0}, {"Id": 1721, "Fecha": "2026-04-21", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición bebidas linea coca", "Importe": 188670.0}, {"Id": 1723, "Fecha": "2026-04-21", "Proveedor": "Sindicato Obras Sanitarias", "Categoría": "Alquiler ", "Subcategoría": "", "Comentario": "Paga de alquiler del club", "Importe": 650000.0}, {"Id": 1724, "Fecha": "2026-04-21", "Proveedor": "Sindicato Obras Sanitarias", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "comisión al sindicato por escuela de river", "Importe": 150000.0}, {"Id": 1725, "Fecha": "2026-04-21", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Compra de reflector", "Importe": 46000.0}, {"Id": 1726, "Fecha": "2026-04-21", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 39052.9}, {"Id": 1727, "Fecha": "2026-04-21", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 132377.63}, {"Id": 1728, "Fecha": "2026-04-21", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal administrativo", "Importe": 81300.0}, {"Id": 1729, "Fecha": "2026-04-21", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 113372.9}, {"Id": 1730, "Fecha": "2026-04-21", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 153652.9}, {"Id": 1731, "Fecha": "2026-04-22", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "10hs de sereno", "Importe": 35000.0}, {"Id": 1732, "Fecha": "2026-04-22", "Proveedor": "CENOA (BAISE Distribuciones)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición línea Heineken", "Importe": 256544.12}, {"Id": 1733, "Fecha": "2026-04-22", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición fernet y vinos", "Importe": 357600.0}, {"Id": 1734, "Fecha": "2026-04-20", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 2880.0}, {"Id": 1735, "Fecha": "2026-04-20", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock", "Importe": 21360.0}, {"Id": 1736, "Fecha": "2026-04-20", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal 20% descuento", "Importe": 10160.0}, {"Id": 1737, "Fecha": "2026-04-20", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock", "Importe": 21360.0}, {"Id": 1738, "Fecha": "2026-04-20", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal", "Importe": 19200.0}, {"Id": 1739, "Fecha": "2026-04-20", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal", "Importe": 30480.0}, {"Id": 1740, "Fecha": "2026-04-20", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock", "Importe": 21360.0}, {"Id": 1741, "Fecha": "2026-04-21", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "ajuste de stock", "Importe": 7120.0}, {"Id": 1742, "Fecha": "2026-04-21", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "consumo personal", "Importe": 4800.0}, {"Id": 1743, "Fecha": "2026-04-23", "Proveedor": "GRUPO PANELLA (Linea Pepsi)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición bebidas linea pepsi", "Importe": 282476.56}, {"Id": 1744, "Fecha": "2026-04-23", "Proveedor": "La Sante, Joaquín Ledesma (Mix Frutos)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "", "Importe": 41000.0}, {"Id": 1745, "Fecha": "2026-04-23", "Proveedor": "Juan Manuel Alfredo (Limpieza)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "", "Importe": 203900.0}, {"Id": 1748, "Fecha": "2026-04-24", "Proveedor": "El CARNES S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición de carbones", "Importe": 30000.0}, {"Id": 1749, "Fecha": "2026-04-24", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto", "Importe": 30000.0}, {"Id": 1750, "Fecha": "2026-04-24", "Proveedor": "Valente Norberto, herrero", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "", "Importe": 180000.0}, {"Id": 1751, "Fecha": "2026-04-24", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo correspondiente", "Importe": 54000.0}, {"Id": 1752, "Fecha": "2026-04-24", "Proveedor": "Galvan Felipe (Sereno)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "semana trabajada de sereno", "Importe": 92000.0}, {"Id": 1753, "Fecha": "2026-04-25", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "Adelanto de sueldo.", "Importe": 20000.0}, {"Id": 1754, "Fecha": "2026-04-25", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal + noche de sereno", "Importe": 183500.0}, {"Id": 1755, "Fecha": "2026-04-25", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposicion linea coca.", "Importe": 100475.0}, {"Id": 1756, "Fecha": "2026-04-25", "Proveedor": "Gomez William, mantenimiento", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal", "Importe": 144000.0}, {"Id": 1757, "Fecha": "2026-04-25", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "paga del dia 25/04", "Importe": 27000.0}, {"Id": 1758, "Fecha": "2026-04-25", "Proveedor": "Lo de AGUKO (Triples miga)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion sanguchitos", "Importe": 48000.0}, {"Id": 1759, "Fecha": "2026-04-25", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 28000.0}, {"Id": 1760, "Fecha": "2026-04-26", "Proveedor": "Emanuel Guerra", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "7 horas de trabajo", "Importe": 21000.0}, {"Id": 1761, "Fecha": "2026-04-26", "Proveedor": "Panificadora Kuresza", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposicion panificados", "Importe": 14400.0}, {"Id": 1762, "Fecha": "2026-04-27", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 52000.0}, {"Id": 1763, "Fecha": "2026-04-27", "Proveedor": "Gomez Miguel (Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto", "Importe": 20000.0}, {"Id": 1764, "Fecha": "2026-04-27", "Proveedor": "Jorge, auxiliar", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "dia de trabajo 6 horas", "Importe": 20000.0}, {"Id": 1765, "Fecha": "2026-04-27", "Proveedor": "Gomez Oscar ( Mantenimiento)", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semana + feriado", "Importe": 118000.0}, {"Id": 1766, "Fecha": "2026-04-28", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "Se abona la cocina del dia.", "Importe": 39000.0}, {"Id": 1767, "Fecha": "2026-04-28", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "adelanto sueldo semanal", "Importe": 50000.0}, {"Id": 1768, "Fecha": "2026-04-28", "Proveedor": "Lo de AGUKO (Triples miga)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición migas", "Importe": 40000.0}, {"Id": 1769, "Fecha": "2026-04-28", "Proveedor": "YPF Autopista", "Categoría": "Compra", "Subcategoría": "", "Comentario": "nafta y aceite", "Importe": 35670.0}, {"Id": 1770, "Fecha": "2026-04-28", "Proveedor": "Yerba Mate Secadero Santiago", "Categoría": "Compra", "Subcategoría": "", "Comentario": "stock inicial yerbas", "Importe": 83200.0}, {"Id": 1771, "Fecha": "2026-04-28", "Proveedor": "Varios", "Categoría": "Compra", "Subcategoría": "", "Comentario": "se abona anterior pedido de fernet", "Importe": 330000.0}, {"Id": 1773, "Fecha": "2026-04-29", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 27000.0}, {"Id": 1774, "Fecha": "2026-04-29", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Compra de cabezal para maquina de cortar el pasto.", "Importe": 40000.0}, {"Id": 1775, "Fecha": "2026-04-30", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 25000.0}, {"Id": 1776, "Fecha": "2026-04-28", "Proveedor": "Erik Infante", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal feriado lunes", "Importe": 104461.97}, {"Id": 1777, "Fecha": "2026-04-28", "Proveedor": "Cesar Castillo", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal feriado lunes", "Importe": 145633.98}, {"Id": 1778, "Fecha": "2026-04-28", "Proveedor": "Gonzalo Morales", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal feriado lunes", "Importe": 158941.97}, {"Id": 1779, "Fecha": "2026-04-28", "Proveedor": "Florencia Paz", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal administrativo", "Importe": 93620.0}, {"Id": 1780, "Fecha": "2026-04-28", "Proveedor": "Diaz Daniela ", "Categoría": "Sueldos", "Subcategoría": "", "Comentario": "sueldo semanal feriado lunes", "Importe": 117941.97}, {"Id": 1781, "Fecha": "2026-04-30", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "Arreglo maquina y cabezal para cortar pasto.", "Importe": 38000.0}, {"Id": 1782, "Fecha": "2026-04-30", "Proveedor": "Varios", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "uber para compresor de Norberto.", "Importe": 5300.0}, {"Id": 1783, "Fecha": "2026-04-30", "Proveedor": "Diaz Angel, electricista ", "Categoría": "Operativo", "Subcategoría": "", "Comentario": "mano de obra + materiales electricista", "Importe": 150000.0}, {"Id": 1784, "Fecha": "2026-04-30", "Proveedor": "GRUPO PANELLA (Linea Pepsi)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposición linea Pepsi.", "Importe": 371000.0}, {"Id": 1785, "Fecha": "2026-04-30", "Proveedor": "Salta Refrescos S.A", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Reposicion linea Coca", "Importe": 291700.0}, {"Id": 1786, "Fecha": "2026-04-30", "Proveedor": "Pianezzola y Cia SA", "Categoría": "Compra", "Subcategoría": "", "Comentario": "Stock inicial mini fernet", "Importe": 38000.0}, {"Id": 1787, "Fecha": "2026-04-30", "Proveedor": "Cachito y José (Mayorista Norte)", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición vinos y Gin", "Importe": 75900.0}, {"Id": 1788, "Fecha": "2026-04-30", "Proveedor": "Panificadora Kuresza", "Categoría": "Compra", "Subcategoría": "", "Comentario": "reposición de panificados", "Importe": 36000.0}, {"Id": 1789, "Fecha": "2026-04-30", "Proveedor": "Nicolas Navarro", "Categoría": "Cocina", "Subcategoría": "", "Comentario": "", "Importe": 79000.0}];
+
+// ── DATOS VENTAS ──────────────────────────────────────────────────────
+const DATA = [{"Categoria":"CARNES","Subcategoria":"","Nombre":"Corte de carne","Cantidad":4679.32,"Total":467932.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Masticables Arcor","Cantidad":923.0,"Total":46150.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Agua Mineral grande","Cantidad":693.0,"Total":1340300.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Hora de padel TECHADA","Cantidad":543.5,"Total":12227500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Coca-Cola 1,5 litro","Cantidad":364.0,"Total":1572300.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Pelotas x unidad Bullpadel","Cantidad":245.0,"Total":1386800.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Hora Padel OUT C/LUZ","Cantidad":198.25,"Total":3881000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Heineken 1Lt","Cantidad":160.0,"Total":1027800.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cerveza Stella Artois 1 lts","Cantidad":149.0,"Total":1016500.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Caramelos gajitos frutales","Cantidad":143.0,"Total":14300.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Flynn Paf","Cantidad":140.0,"Total":14000.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Mani saborizados","Cantidad":130.0,"Total":180800.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Caramelos Cremino","Cantidad":122.0,"Total":12200.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Palito salado","Cantidad":119.0,"Total":147600.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Turron Arcor","Cantidad":109.0,"Total":43600.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Cafe en capsula vrios","Cantidad":99.0,"Total":247500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Coca zero 1.5 Lts","Cantidad":91.0,"Total":392200.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Caramelos Menta Cristal","Cantidad":89.0,"Total":8900.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cerveza Brahma 1 lts","Cantidad":82.0,"Total":397000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite Rosada 1,5Lts","Cantidad":80.0,"Total":274500.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Porción papas fritas","Cantidad":79.0,"Total":474000.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Papas Tafi 100g","Cantidad":79.0,"Total":226400.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Mani comun","Cantidad":78.0,"Total":78000.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Alfajores de maicena x ud","Cantidad":75.0,"Total":77800.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Entreno 14 a 18 OUT SIN LUZ","Cantidad":60.0,"Total":582000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Coca 600cc","Cantidad":56.0,"Total":147200.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Pelota Odea","Cantidad":55.0,"Total":276200.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Hora de padel OUT sin luz","Cantidad":52.5,"Total":929000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Chupetin Mr. Pop","Cantidad":50.0,"Total":10000.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Lomito Completo","Cantidad":49.0,"Total":539000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Miga Fiambre","Cantidad":47.0,"Total":198500.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Tutucas sin tacc","Cantidad":45.0,"Total":85500.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Cubre Grip Madma perforado","Cantidad":42.0,"Total":117000.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Facturas y Medialunas","Cantidad":40.0,"Total":40000.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Agua Caliente","Cantidad":39.0,"Total":34500.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Almohaditas varias","Cantidad":39.0,"Total":113200.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Cubre Grip Madma lisos","Cantidad":38.0,"Total":97900.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite x 500cc","Cantidad":37.0,"Total":70100.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Chicle Top Line 7 Fruta","Cantidad":36.0,"Total":36000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite Pomelo 1,5 Ltrs","Cantidad":33.0,"Total":115500.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Chupetín Pico Dulce","Cantidad":32.0,"Total":9600.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Pelotas por unidad Siux","Cantidad":32.0,"Total":180300.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Sifon soda Benedictino 2ltrs","Cantidad":32.0,"Total":85600.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Azul 1.25Lt","Cantidad":31.0,"Total":150500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Coca Zero 1Ltr","Cantidad":30.0,"Total":94000.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Hora de padel in SINDICATO","Cantidad":29.5,"Total":504375.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Hora de padel profe de 18 a 20 C/LUZ","Cantidad":29.5,"Total":471000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Gomita rollo Mogul","Cantidad":28.0,"Total":27400.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Chicle TOPLINE 7 MINT","Cantidad":28.0,"Total":25900.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Coca zero 600cc","Cantidad":27.0,"Total":73200.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Cereal Mix Yogurht","Cantidad":27.0,"Total":27000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cerveza Quilmes 1 lts","Cantidad":26.0,"Total":120000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palo frio tutti","Cantidad":26.0,"Total":14600.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Bolsa de hielo Chica","Cantidad":26.0,"Total":94400.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Miga Surtidos","Cantidad":26.0,"Total":129600.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Promo fernet","Cantidad":26.0,"Total":684900.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Rojo 1.25Lt","Cantidad":25.0,"Total":121500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Sprite 1.5ltrs descartable","Cantidad":24.0,"Total":105600.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Cubre grip X-trust perforado","Cantidad":24.0,"Total":74400.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Entreno 07 a 14 OUT","Cantidad":24.0,"Total":187000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Rollo Mogul Extreme","Cantidad":24.0,"Total":24000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cepita durazno 300cc","Cantidad":23.0,"Total":39100.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Fanta Naranja 1,5 Lts","Cantidad":22.0,"Total":95000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Club Social","Cantidad":22.0,"Total":11000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Azul 500ml","Cantidad":21.0,"Total":67200.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Mirinda 2 lts","Cantidad":21.0,"Total":70000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cerveza Corona 710 cc","Cantidad":21.0,"Total":117300.0},{"Categoria":"Alquileres","Subcategoria":"","Nombre":"Alquiler de paleta","Cantidad":20.0,"Total":59002.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Mix Tropical","Cantidad":19.0,"Total":67488.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Pepsi Lata 354cc","Cantidad":19.0,"Total":33000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palito bombon Barra brava","Cantidad":19.0,"Total":23700.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Bizcochos Don Satur salados 200grs","Cantidad":18.0,"Total":27000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Pepsi 2 lts","Cantidad":18.0,"Total":65200.0},{"Categoria":"Alquileres","Subcategoria":"","Nombre":"Hora Futbol 11 C/LUZ","Cantidad":17.26,"Total":1952000.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Promo Miga 2x1","Cantidad":17.0,"Total":68000.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Cubre grip relieve odea","Cantidad":17.0,"Total":57700.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Top Line 7 violet Cherry","Cantidad":17.0,"Total":17000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Bizcochos Don Satur Dulces 200grs","Cantidad":17.0,"Total":25500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Salta Negra 1Lt","Cantidad":17.0,"Total":53500.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palo frio uva","Cantidad":17.0,"Total":9400.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galleta Rumba 110 grs","Cantidad":16.0,"Total":22400.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Azul 500 ml","Cantidad":16.0,"Total":50300.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palo frio frutilla","Cantidad":15.0,"Total":8000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Azul 1 lts","Cantidad":15.0,"Total":80200.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite Naranja 1,5 Ltrs","Cantidad":15.0,"Total":52500.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palo frio limón","Cantidad":15.0,"Total":8500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Paso DLT Pomelo 1,5ltrs","Cantidad":15.0,"Total":55000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Rojo 500ml","Cantidad":14.0,"Total":44600.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite Manzana 1,5 Ltrs","Cantidad":14.0,"Total":48500.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Tostado jamón y queso","Cantidad":14.0,"Total":98000.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Entreno 07 a 14 IN FIN DE SEMANA","Cantidad":14.0,"Total":168000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletas Sonrisas 108grs","Cantidad":14.0,"Total":19600.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Entreno 07 a 14 IN","Cantidad":13.0,"Total":154000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Rojo 500 ml","Cantidad":13.0,"Total":40900.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Pochoclo Salado 50grs","Cantidad":13.0,"Total":16900.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Saladix Duo 80 grs","Cantidad":13.0,"Total":22100.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite Pera 1,5 Ltrs","Cantidad":13.0,"Total":44500.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Picada milanesa c/ papas p/2","Cantidad":13.0,"Total":117000.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Milanesa Completo","Cantidad":13.0,"Total":130000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Pepsi 500cc","Cantidad":13.0,"Total":25800.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Gel Energy","Cantidad":13.0,"Total":23400.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Vino Saint Felicien Malbec","Cantidad":13.0,"Total":208000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Saladix Jamon 100grs","Cantidad":12.0,"Total":21500.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Saladix Pizza 100grs","Cantidad":12.0,"Total":20400.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletas Merengadas 88grs","Cantidad":12.0,"Total":16800.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Lomito Simple","Cantidad":12.0,"Total":120000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Gall Surtido Bagley 400g","Cantidad":12.0,"Total":44100.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletas Pepas Trio 200grs","Cantidad":11.0,"Total":9900.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Cono bola americana-cobertura","Cantidad":11.0,"Total":30300.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Bonsi vasitos amer-ddl-frutilla","Cantidad":11.0,"Total":24200.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Saladix Calabresa 100g","Cantidad":11.0,"Total":19700.0},{"Categoria":"CARNES","Subcategoria":"","Nombre":"Carbón chico","Cantidad":11.0,"Total":33000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Vino Cordero con piel de Lobo","Cantidad":11.0,"Total":82500.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Pepas x ud","Cantidad":10.0,"Total":4800.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palito Bombon Golden Bco","Cantidad":10.0,"Total":17400.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletas Chocolinas 170grs","Cantidad":10.0,"Total":17600.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Milanesa Simple","Cantidad":10.0,"Total":90000.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"pepas x6","Cantidad":9.0,"Total":14400.0},{"Categoria":"CARNES","Subcategoria":"","Nombre":"Carbón Grande 10kg","Cantidad":9.0,"Total":58500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Rojo 1 lts","Cantidad":9.0,"Total":46600.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Pepsi Black 2Ltrs","Cantidad":8.0,"Total":27500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Levite Limonada 1,5 Ltrs","Cantidad":8.0,"Total":28000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Amarillo 1.25Lt","Cantidad":8.0,"Total":39000.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Aritos frutales","Cantidad":8.0,"Total":19800.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cepita naranja 300cc","Cantidad":8.0,"Total":13600.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletas Oreo","Cantidad":8.0,"Total":19200.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alfajor Rasta Negro","Cantidad":7.0,"Total":11200.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Amarillo 500 ml","Cantidad":7.0,"Total":22600.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Encendedor mini Bic","Cantidad":7.0,"Total":9100.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Helado Bombon escoces bco","Cantidad":7.0,"Total":10300.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Protector hubis dentado negro","Cantidad":7.0,"Total":22400.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletas Pepitos 119grs","Cantidad":7.0,"Total":15200.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Cubre grip relieve hubis camuflado","Cantidad":7.0,"Total":24500.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palito Bombon Golden Croky","Cantidad":7.0,"Total":12000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alf Mini torta Aguila blanco","Cantidad":7.0,"Total":11900.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Gall Cereal Mix varias 207gr","Cantidad":7.0,"Total":16800.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Uva 500ml","Cantidad":6.0,"Total":19800.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Estrella Galicia Lata473ml","Cantidad":6.0,"Total":26400.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Imperial Rubia 1Lt","Cantidad":6.0,"Total":24000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Vino tinto FABRE MONTMAYOU","Cantidad":6.0,"Total":45000.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Garrapiñada L&G Crunch","Cantidad":6.0,"Total":12000.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Hamburguesa completa","Cantidad":6.0,"Total":30000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Mini Fantoche Negro x 6 uds","Cantidad":6.0,"Total":13200.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alfajor Rasta Blanco","Cantidad":6.0,"Total":9600.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alf Minitorta clasico","Cantidad":6.0,"Total":10800.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Red Bull","Cantidad":6.0,"Total":21000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galletitas Lincoln 153grs","Cantidad":6.0,"Total":11300.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Nueces Light","Cantidad":6.0,"Total":18900.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alf Chocotorta Aguila","Cantidad":6.0,"Total":10200.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Pochoclo Dulce 50grs","Cantidad":6.0,"Total":7500.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alf Triple Bagley blanco","Cantidad":6.0,"Total":10800.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Pochoclos Salados 50grs","Cantidad":6.0,"Total":7300.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cepita Fresh Mza 1,5 Lt","Cantidad":5.0,"Total":14600.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cepita fresh Naranja 1,5 Lt","Cantidad":5.0,"Total":14400.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Gall Coquitas 177grs","Cantidad":5.0,"Total":10000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palito Bombon Golden Max","Cantidad":5.0,"Total":8700.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Gall Media Tarde","Cantidad":5.0,"Total":3000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Amarillo 500 ml","Cantidad":5.0,"Total":16000.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Protector odea dentado","Cantidad":5.0,"Total":42500.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Cassatta frutilla-choco-vainilla","Cantidad":5.0,"Total":6300.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Top line 7 STRONG","Cantidad":5.0,"Total":5000.0},{"Categoria":"Alquileres","Subcategoria":"","Nombre":"Hora Basquet/Voley/Cesto C/LUZ","Cantidad":5.0,"Total":120000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Cereal Mix Mza","Cantidad":5.0,"Total":5000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Rollo de cocina unidad","Cantidad":5.0,"Total":5000.0},{"Categoria":"Alquileres","Subcategoria":"","Nombre":"Hora Fútbol 11 S/LUZ","Cantidad":4.5,"Total":450000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alafajor Fantoche triple negro","Cantidad":4.0,"Total":4000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Monster Watermel","Cantidad":4.0,"Total":16000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"OFF aerosol Family 165cm3","Cantidad":4.0,"Total":34800.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Galleta Traviata 108grs","Cantidad":4.0,"Total":3200.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Vino Valentin Lacrado","Cantidad":4.0,"Total":19100.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Gall. Diversión 400grs","Cantidad":4.0,"Total":10600.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alfajor Fantoche triple Bco","Cantidad":4.0,"Total":4000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Helado Bombon crocante","Cantidad":3.0,"Total":3900.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Pelota Odea Love rosa","Cantidad":3.0,"Total":19300.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Cereal Bolitas de chocolate","Cantidad":3.0,"Total":6300.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Agua tonica Paso de los Toros 1.5 ltrs","Cantidad":3.0,"Total":8700.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Palo frio de Naranja","Cantidad":3.0,"Total":1700.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Smoothie Tuttifresh","Cantidad":3.0,"Total":8600.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Naipe Casino","Cantidad":3.0,"Total":11700.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Imperial IPA 1Lt","Cantidad":3.0,"Total":10800.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Cafe en saquito","Cantidad":3.0,"Total":6000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Alf Tofi Negro 46 grs","Cantidad":3.0,"Total":3600.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Helado Bombón suizo","Cantidad":3.0,"Total":4200.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Monster Mango Loco 500 ml","Cantidad":3.0,"Total":12900.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Naranja 1.25Lt","Cantidad":2.0,"Total":9800.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Resina neron","Cantidad":2.0,"Total":8800.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Protector hubis dentado","Cantidad":2.0,"Total":9400.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Barra proteica alpalo","Cantidad":2.0,"Total":3400.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Pizza especial","Cantidad":2.0,"Total":24000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Monster Ultra 500 ml","Cantidad":2.0,"Total":8300.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Carita Tiki choco-vainilla","Cantidad":2.0,"Total":2000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Monster Pineapple","Cantidad":2.0,"Total":7500.0},{"Categoria":"Turno padel","Subcategoria":"","Nombre":"Paleta","Cantidad":2.0,"Total":5000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Carita Tiki frutilla-americana","Cantidad":2.0,"Total":2400.0},{"Categoria":"Snacks","Subcategoria":"","Nombre":"Mani pelado Tafí 100grs","Cantidad":2.0,"Total":3000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Jugo Cepita Durazno 1,5ltrs","Cantidad":2.0,"Total":8600.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Helado Alfajor premiun Bco","Cantidad":2.0,"Total":4000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Promo Fernet Mini","Cantidad":2.0,"Total":13000.0},{"Categoria":"Almacen","Subcategoria":"","Nombre":"Mini Fantoche Blanco x6","Cantidad":2.0,"Total":4400.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Helado Alfajor premiun ngro","Cantidad":2.0,"Total":4000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"GIN BEEFEATER DRY","Cantidad":1.0,"Total":33500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Soda Benedictino 2ltrs","Cantidad":1.0,"Total":2400.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Helado Alfajor premiun hit","Cantidad":1.0,"Total":2200.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Andes Origen lata","Cantidad":1.0,"Total":3000.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Tortillitas","Cantidad":1.0,"Total":500.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Gatorade Naranja 500ml","Cantidad":1.0,"Total":2800.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"taza de cafe L/Monza verbano","Cantidad":1.0,"Total":2860.08},{"Categoria":"Almacen","Subcategoria":"","Nombre":"OFF crema 60gr","Cantidad":1.0,"Total":4000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Cerveza Guinness extra Stout 473mls","Cantidad":1.0,"Total":5000.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Cono flama choco-granizado","Cantidad":1.0,"Total":3500.0},{"Categoria":"Alquileres","Subcategoria":"","Nombre":"Hora Basquet/Voley/Cesto S/LUZ","Cantidad":1.0,"Total":20000.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Powerade Amarillo 1 lts","Cantidad":1.0,"Total":5400.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Monster Zero 500 mls","Cantidad":1.0,"Total":4300.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Monster Green Zero","Cantidad":1.0,"Total":3500.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Matecocido","Cantidad":1.0,"Total":1000.0},{"Categoria":"Accesorios Padel","Subcategoria":"","Nombre":"Aerosol resina 2 win","Cantidad":1.0,"Total":19900.0},{"Categoria":"Bebidas","Subcategoria":"","Nombre":"Vino Nicasia Red Blend","Cantidad":1.0,"Total":12100.0},{"Categoria":"Comida","Subcategoria":"","Nombre":"Torta Tiramisu","Cantidad":1.0,"Total":16200.0},{"Categoria":"Cafetería","Subcategoria":"","Nombre":"Smoothie Antioxidante","Cantidad":1.0,"Total":2900.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Hamburguesa simple","Cantidad":1.0,"Total":4000.0},{"Categoria":"COCINA","Subcategoria":"","Nombre":"Pizza Comun","Cantidad":1.0,"Total":11000.0}];
+
+// ── HELPERS ─────────────────────────────────────────────────────────
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString('es-AR');
+}
+function groupBy(data, key) {
+  return data.reduce((acc, item) => {
+    const k = item[key] || 'Sin categoría';
+    if (!acc[k]) acc[k] = { total: 0, cantidad: 0, items: [] };
+    acc[k].total += item.Total || 0;
+    acc[k].cantidad += item.Cantidad || 0;
+    acc[k].items.push(item);
+    return acc;
+  }, {});
+}
+
+// ── CALCULOS ─────────────────────────────────────────────────────────
+const byCat = groupBy(DATA, 'Categoria');
+const totalGeneral = Object.values(byCat).reduce((s, c) => s + c.total, 0);
+const catSorted = Object.entries(byCat).sort((a,b) => b[1].total - a[1].total);
+const maxCatTotal = catSorted[0][1].total;
+
+// Gastos globales
+const gastosPorCat = GASTOS.reduce((acc, g) => {
+  const cat = g['Categoría'] || 'Sin categoría';
+  if (!acc[cat]) acc[cat] = { total: 0, items: [] };
+  acc[cat].total += g.Importe || 0;
+  acc[cat].items.push(g);
+  return acc;
+}, {});
+const totalGastos = GASTOS.reduce((s, g) => s + (g.Importe || 0), 0);
+
+// ── SIDEBAR ──────────────────────────────────────────────────────────
+function buildSidebar() {
+  const container = document.getElementById('catCards');
+  const totalsRow = document.createElement('div');
+  totalsRow.className = 'totals-row';
+  const totalGastosCalc = GASTOS.reduce((s, g) => s + (g.Importe || 0), 0);
+  totalsRow.innerHTML = `
+    <div class="total-card">
+      <div class="total-label">Total Ventas</div>
+      <div class="total-value ventas">${fmt(totalGeneral)}</div>
+    </div>
+    <div class="total-card gastos">
+      <div class="total-label">Total Gastos</div>
+      <div class="total-value gastos">${fmt(totalGastosCalc)}</div>
+    </div>`;
+  container.appendChild(totalsRow);
+
+  catSorted.forEach(([cat, data]) => {
+    const pct = (data.total / totalGeneral * 100).toFixed(1);
+    const barWidth = (data.total / maxCatTotal * 100).toFixed(1);
+    const tienePanel = CAT_PANEL.hasOwnProperty(cat);
+    const card = document.createElement('div');
+    card.className = 'cat-card' + (tienePanel ? '' : ' disabled');
+    const iconos = {
+      'COCINA': '🍳', 'Bebidas': '🥤', 'Accesorios Padel': '🎾',
+      'Snacks': '🍿', 'Almacen': '🏪', 'Comida': '🍦',
+      'CARNES': '🥩', 'Turno padel': '🏟️', 'Alquileres': '🔑',
+      'Cafetería': '☕', 'Inversión': '💰'
+    };
+    const icono = iconos[cat] || '📦';
+    card.innerHTML = `
+      <div class="cat-name"><span class="cat-icon">${icono}</span>${cat}${tienePanel ? '' : ' <span style="font-size:0.58rem;color:var(--muted);font-weight:400;opacity:0.6">—</span>'}</div>
+      <div class="cat-bar-wrap"><div class="cat-bar" style="width:0%" data-width="${barWidth}%"></div></div>
+      <div class="cat-stats">
+        <span class="cat-monto">${fmt(data.total)}</span>
+        <span class="cat-pct">${pct}%</span>
+      </div>`;
+    if (tienePanel) {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        CAT_PANEL[cat]();
+      });
+    }
+    container.appendChild(card);
+  });
+  // Animar barras
+  setTimeout(() => {
+    document.querySelectorAll('.cat-bar').forEach(b => {
+      b.style.width = b.dataset.width;
+    });
+  }, 100);
+}
+
+// ── CHAT ──────────────────────────────────────────────────────────────
+const history = [];
+let isLoading = false;
+
+function addMessage(role, html) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  const avatarIcon = role === 'ai' ? '🤖' : '👤';
+  div.innerHTML = `
+    <div class="avatar ${role}">${avatarIcon}</div>
+    <div class="bubble">${html}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  div.id = 'typing-indicator';
+  div.innerHTML = `<div class="avatar ai">🤖</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+async function sendMessage() {
+  if (isLoading) return;
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  doSend(text);
+}
+
+function sendSuggestion(btn, override) {
+  const text = override || btn.textContent;
+  doSend(text);
+}
+
+async function doSend(text) {
+  if (isLoading) return;
+  isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('suggestions').style.display = 'none';
+
+  addMessage('user', text);
+  history.push({ role: 'user', content: text });
+
+  addTyping();
+
+  // Contexto de datos para el sistema
+  const dataContext = JSON.stringify(catSorted.map(([cat, d]) => ({
+    categoria: cat,
+    total: d.total,
+    cantidad: d.cantidad,
+    productos: d.items.map(i => ({ nombre: i.Nombre, cantidad: i.Cantidad, total: i.Total }))
+  })));
+
+  const gastosPorCat = GASTOS.reduce((acc, g) => {
+    const cat = g['Categoría'] || 'Sin categoría';
+    if (!acc[cat]) acc[cat] = { total: 0, items: [] };
+    acc[cat].total += g.Importe || 0;
+    acc[cat].items.push(g);
+    return acc;
+  }, {});
+  const totalGastos = GASTOS.reduce((s, g) => s + (g.Importe || 0), 0);
+  const gastosResumen = Object.entries(gastosPorCat).sort((a,b)=>b[1].total-a[1].total).map(([cat, d]) => ({
+    categoria: cat, total: d.total, registros: d.items.length
+  }));
+
+  const systemPrompt = `Sos un agente analista financiero para un club deportivo argentino.
+Tenés acceso a VENTAS y GASTOS de Abril 2026. Respondé siempre en español, claro y útil.
+Usá HTML con th/td para tablas. Usá <span class="highlight"> para cifras clave. Usá <div class="tip"> para recomendaciones.
+Los montos son en pesos argentinos.
+
+=== VENTAS: ${JSON.stringify(catSorted.map(([cat, d]) => ({cat, total: d.total, qty: d.cantidad})))} | TOTAL: $${Math.round(totalGeneral).toLocaleString('es-AR')} ===
+=== GASTOS: ${JSON.stringify(gastosResumen)} | TOTAL: $${Math.round(totalGastos).toLocaleString('es-AR')} ===
+=== RESULTADO NETO: $${Math.round(totalGeneral - totalGastos).toLocaleString('es-AR')} ===
+Gastos: Compra=mercadería, Sueldos=personal, Inversión=activos, Cocina=insumos diarios, Operativo=servicios/mantenimiento.`;
+
+  const apiKey = '';
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: history
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    const reply = data.content?.map(c => c.text || '').join('') || 'No pude procesar la respuesta.';
+    history.push({ role: 'assistant', content: reply });
+    removeTyping();
+    addMessage('ai', reply);
+  } catch(e) {
+    removeTyping();
+    addMessage('ai', `Error: ${e.message || 'No se pudo conectar con el agente. Verificá tu API Key.'}`);
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+// ── MAPA DE CATEGORÍAS ───────────────────────────────────────────────
+// Qué categorías de venta tienen panel y cuál abren
+const CAT_PANEL = {
+  'COCINA':            () => abrirCocina(),
+  'Bebidas':           () => abrirCompras(),
+  'Accesorios Padel':  () => abrirCompras(),
+  'Snacks':            () => abrirCompras(),
+  'Almacen':           () => abrirCompras(),
+  'Comida':            () => abrirCompras(),
+  'CARNES':          () => abrirCARNES(),
+  'Turno padel':       () => abrirTurnos(),
+  'Alquileres':        () => abrirTurnos(),
+  'Inversión':         () => abrirInversion(),
+  'Cafetería':         () => abrirCafeteria(),
+};
+
+// ── HELPER MODAL ─────────────────────────────────────────────────────
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ── PANEL CANTINA ────────────────────────────────────────────────────
+function abrirCantina() {
+  const cats = ['Bebidas','Snacks','Almacen','Comida'];
+  const ventasPorCat = {};
+  let totalVentas = 0;
+  cats.forEach(c => {
+    const items = DATA.filter(d => d.Categoria === c);
+    const total = items.reduce((s,d) => s + (d.Total||0), 0);
+    ventasPorCat[c] = total;
+    totalVentas += total;
+  });
+
+  // Gastos Compra excluyendo proveedores de otros paneles
+  const pagosCompra = GASTOS.filter(g => {
+    if (g['Categoría'] !== 'Compra') return false;
+    const p = (g.Proveedor||'').toLowerCase();
+    return !EXCLUIR_CANTINA.some(ex => p.includes(ex));
+  });
+  const totalCompras = pagosCompra.reduce((s,g) => s + (g.Importe||0), 0);
+  const balance = totalVentas - totalCompras;
+  const positivo = balance >= 0;
+
+  const filasVentas = cats.map(c =>
+    `<div class="cocina-row">
+      <span class="cocina-label">${c}</span>
+      <span class="cocina-val green">${fmt(ventasPorCat[c])}</span>
+    </div>`
+  ).join('');
+
+  const provMap = {};
+  pagosCompra.forEach(g => { const p = g.Proveedor||'Varios'; provMap[p] = (provMap[p]||0) + g.Importe; });
+  const topProv = Object.entries(provMap).sort((a,b)=>b[1]-a[1]);
+  const filasProv = topProv.map(([p,v]) =>
+    `<div class="pagos-list-row"><span>${p}</span><span>${fmt(v)}</span></div>`
+  ).join('');
+
+  document.getElementById('comprasContenido').innerHTML = `
+    <div class="modal-section-title">Ventas Cantina</div>
+    ${filasVentas}
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total ventas</span>
+      <span class="cocina-val green">${fmt(totalVentas)}</span>
+    </div>
+    <div class="modal-section-title">Compras cantina</div>
+    <div class="pagos-list">${filasProv}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total compras</span>
+      <span class="cocina-val orange">${fmt(totalCompras)}</span>
+    </div>
+    <div class="balance-total">
+      <span class="label">Balance Cantina</span>
+      <span class="val ${positivo?'green':'red'}">${fmt(balance)}</span>
+    </div>
+  `;
+  document.getElementById('comprasOverlay').classList.add('open');
+}
+
+// ── PANEL ACCESORIOS PADEL ────────────────────────────────────────────
+function abrirAccesorios() {
+  const ventasAcc = DATA.filter(d => d.Categoria === 'Accesorios Padel');
+  const totalVentas = ventasAcc.reduce((s,d) => s + (d.Total||0), 0);
+  const filasVentas = ventasAcc.sort((a,b)=>b.Total-a.Total).map(v =>
+    `<div class="pagos-list-row"><span>${v.Nombre}</span><span>${fmt(v.Total)}</span></div>`
+  ).join('');
+
+  const costosNeron = GASTOS.filter(g => g['Categoría'] === 'Compra' && (g.Proveedor||'').toLowerCase().includes('neron'));
+  const totalCostos = costosNeron.reduce((s,g) => s + (g.Importe||0), 0);
+  const filasCostos = costosNeron.map(c =>
+    `<div class="pagos-list-row"><span>${c.Fecha} — ${c.Comentario||c.Proveedor}</span><span>${fmt(c.Importe)}</span></div>`
+  ).join('');
+
+  const balance = totalVentas - totalCostos;
+  const positivo = balance >= 0;
+
+  // Buscar modal de accesorios - reutilizamos comprasOverlay con título dinámico
+  document.getElementById('comprasContenido').innerHTML = `
+    <div class="modal-section-title">Ventas Accesorios Padel</div>
+    <div class="pagos-list">${filasVentas}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total ventas</span>
+      <span class="cocina-val green">${fmt(totalVentas)}</span>
+    </div>
+    <div class="modal-section-title">Compras (Neron)</div>
+    <div class="pagos-list">${filasCostos||'<div class="pagos-list-row"><span>Sin registros</span><span>—</span></div>'}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total compras</span>
+      <span class="cocina-val orange">${fmt(totalCostos)}</span>
+    </div>
+    <div class="balance-total">
+      <span class="label">Balance Accesorios</span>
+      <span class="val ${positivo?'green':'red'}">${fmt(balance)}</span>
+    </div>
+  `;
+  document.getElementById('comprasOverlay').classList.add('open');
+}
+
+// ── PANEL TURNOS & ALQUILERES ────────────────────────────────────────
+function abrirTurnos() {
+  // Ventas Turno padel
+  const turnoItems = DATA.filter(d => d.Categoria === 'Turno padel');
+  const totalTurnos = turnoItems.reduce((s,d) => s + (d.Total||0), 0);
+  const filasTurnos = turnoItems.sort((a,b)=>b.Total-a.Total).map(t =>
+    `<div class="pagos-list-row"><span>${t.Nombre}</span><span>${fmt(t.Total)}</span></div>`
+  ).join('');
+
+  // Ventas Alquileres
+  const alqItems = DATA.filter(d => d.Categoria === 'Alquileres');
+  const totalAlq = alqItems.reduce((s,d) => s + (d.Total||0), 0);
+  const filasAlq = alqItems.sort((a,b)=>b.Total-a.Total).map(a =>
+    `<div class="pagos-list-row"><span>${a.Nombre}</span><span>${fmt(a.Total)}</span></div>`
+  ).join('');
+
+  // Gastos Inversión — recuperos
+  const recuperos = GASTOS.filter(g => g['Categoría'] === 'Inversión' && g.Comentario && g.Comentario.toLowerCase().includes('recupero'));
+  const totalRecuperos = recuperos.reduce((s,g) => s + (g.Importe||0), 0);
+  const filasRecuperos = recuperos.map(r =>
+    `<div class="pagos-list-row"><span>${r.Proveedor}</span><span>${fmt(r.Importe)}</span></div>`
+  ).join('');
+
+  const totalIngresos = totalTurnos + totalAlq;
+
+  document.getElementById('turnosContenido').innerHTML = `
+    <div class="modal-section-title">Turnos de pádel</div>
+    <div class="pagos-list">${filasTurnos}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Subtotal turnos</span>
+      <span class="cocina-val green">${fmt(totalTurnos)}</span>
+    </div>
+
+    <div class="modal-section-title">Alquileres extras (paletas, fútbol, básquet)</div>
+    <div class="pagos-list">${filasAlq}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Subtotal alquileres</span>
+      <span class="cocina-val green">${fmt(totalAlq)}</span>
+    </div>
+
+    <div class="modal-section-title">Retiros de inversión del mes</div>
+    <div class="pagos-list">${filasRecuperos || '<div class="pagos-list-row"><span>Sin recuperos registrados</span><span>—</span></div>'}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total recuperado</span>
+      <span class="cocina-val orange">${fmt(totalRecuperos)}</span>
+    </div>
+
+    <div class="balance-total">
+      <span class="label">Total ingresos canchas</span>
+      <span class="val green">${fmt(totalIngresos)}</span>
+    </div>
+  `;
+  document.getElementById('turnosOverlay').classList.add('open');
+}
+
+// ── PANEL CARANCHO ───────────────────────────────────────────────────
+function abrirCARNES() {
+  const ventasCARNES = DATA.filter(d => d.Categoria === 'CARNES');
+  const totalVentas = ventasCARNES.reduce((s,d) => s + (d.Total||0), 0);
+  const filasVentas = ventasCARNES.sort((a,b)=>b.Total-a.Total).map(v =>
+    `<div class="pagos-list-row"><span>${v.Nombre}</span><span>${fmt(v.Total)}</span></div>`
+  ).join('');
+
+  const costos = GASTOS.filter(g => {
+    if (!g.Proveedor) return false;
+    const p = g.Proveedor.toLowerCase();
+    return p.includes('carancho') || p.includes('carnes el triunfo');
+  });
+  const totalCostos = costos.reduce((s,g) => s + (g.Importe||0), 0);
+  const filasCostos = costos.map(c =>
+    `<div class="pagos-list-row"><span>${c.Fecha} — ${c.Proveedor} (${c.Comentario||''})</span><span>${fmt(c.Importe)}</span></div>`
+  ).join('');
+
+  const balance = totalVentas - totalCostos;
+  const positivo = balance >= 0;
+
+  document.getElementById('carnesContenido').innerHTML = `
+    <div class="modal-section-title">Ventas CARNES</div>
+    <div class="pagos-list">${filasVentas}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total ventas</span>
+      <span class="cocina-val green">${fmt(totalVentas)}</span>
+    </div>
+
+    <div class="modal-section-title">Compras (CARNES + El CARNES S.A + Carnes El Triunfo)</div>
+    <div class="pagos-list">${filasCostos || '<div class="pagos-list-row"><span>Sin registros</span><span>—</span></div>'}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total compras</span>
+      <span class="cocina-val orange">${fmt(totalCostos)}</span>
+    </div>
+
+    <div class="balance-total">
+      <span class="label">Balance CARNES</span>
+      <span class="val ${positivo?'green':'red'}">${fmt(balance)}</span>
+    </div>
+  `;
+  document.getElementById('carnesOverlay').classList.add('open');
+}
+
+// ── PANEL INVERSIÓN ──────────────────────────────────────────────────
+function abrirInversion() {
+  const gastosInv = GASTOS.filter(g => g['Categoría'] === 'Inversión');
+
+  const recuperos = gastosInv.filter(g => g.Comentario && g.Comentario.toLowerCase().includes('recupero'));
+  const totalRecuperos = recuperos.reduce((s,g) => s + (g.Importe||0), 0);
+  const filasRecuperos = recuperos.map(r =>
+    `<div class="pagos-list-row"><span>${r.Fecha} — ${r.Proveedor}</span><span>${fmt(r.Importe)}</span></div>`
+  ).join('');
+
+  const activos = gastosInv.filter(g => !g.Comentario || !g.Comentario.toLowerCase().includes('recupero'));
+  const totalActivos = activos.reduce((s,g) => s + (g.Importe||0), 0);
+  const filasActivos = activos.map(a =>
+    `<div class="pagos-list-row"><span>${a.Fecha} — ${a.Comentario||a.Proveedor}</span><span>${fmt(a.Importe)}</span></div>`
+  ).join('');
+
+  const totalInv = totalRecuperos + totalActivos;
+
+  document.getElementById('inversionContenido').innerHTML = `
+    <div class="modal-section-title">Recuperos de socios</div>
+    <div class="pagos-list">${filasRecuperos}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total recuperado</span>
+      <span class="cocina-val green">${fmt(totalRecuperos)}</span>
+    </div>
+
+    <div class="modal-section-title">Compra de activos / equipamiento</div>
+    <div class="pagos-list">${filasActivos}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total invertido</span>
+      <span class="cocina-val orange">${fmt(totalActivos)}</span>
+    </div>
+
+    <div class="balance-total">
+      <span class="label">Movimiento total inversión</span>
+      <span class="val orange">${fmt(totalInv)}</span>
+    </div>
+  `;
+  document.getElementById('inversionOverlay').classList.add('open');
+}
+
+// ── PANEL CAFETERÍA ──────────────────────────────────────────────────
+function abrirCafeteria() {
+  const ventasCafe = DATA.filter(d => d.Categoria === 'Cafetería');
+  const totalVentas = ventasCafe.reduce((s,d) => s + (d.Total||0), 0);
+  const filasVentas = ventasCafe.sort((a,b)=>b.Total-a.Total).map(v =>
+    `<div class="pagos-list-row"><span>${v.Nombre}</span><span>${fmt(v.Total)}</span></div>`
+  ).join('');
+
+  // Proveedores: Capsulandia + Panificadora Kuresza
+  const proveedoresCafe = ['Capsulandia', 'Panificadora Kuresza'];
+  const costos = GASTOS.filter(g => proveedoresCafe.some(p => g.Proveedor && g.Proveedor.toLowerCase().includes(p.toLowerCase())));
+  const totalCostos = costos.reduce((s,g) => s + (g.Importe||0), 0);
+  const filasCostos = costos.map(c =>
+    `<div class="pagos-list-row"><span>${c.Fecha} — ${c.Proveedor} (${c.Comentario||''})</span><span>${fmt(c.Importe)}</span></div>`
+  ).join('');
+
+  const balance = totalVentas - totalCostos;
+  const positivo = balance >= 0;
+
+  document.getElementById('cafeteriaContenido').innerHTML = `
+    <div class="modal-section-title">Ventas cafetería</div>
+    <div class="pagos-list">${filasVentas}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total ventas</span>
+      <span class="cocina-val green">${fmt(totalVentas)}</span>
+    </div>
+
+    <div class="modal-section-title">Costos (Capsulandia + Panificadora Kuresza)</div>
+    <div class="pagos-list">${filasCostos || '<div class="pagos-list-row"><span>Sin registros</span><span>—</span></div>'}</div>
+    <div class="cocina-row" style="font-weight:700">
+      <span class="cocina-label" style="color:var(--text)">Total costos</span>
+      <span class="cocina-val orange">${fmt(totalCostos)}</span>
+    </div>
+
+    <div class="balance-total">
+      <span class="label">Balance cafetería</span>
+      <span class="val ${positivo?'green':'red'}">${fmt(balance)}</span>
+    </div>
+  `;
+  document.getElementById('cafeteriaOverlay').classList.add('open');
+}
+
+// ── COCINA ───────────────────────────────────────────────────────────
+function abrirCocina() {
+  const ventasCocina = DATA.filter(d => d.Categoria === 'COCINA');
+  const totalVentas = ventasCocina.reduce((s, d) => s + (d.Total || 0), 0);
+
+  const pagosCocina = GASTOS.filter(g => g['Categoría'] === 'Cocina');
+  const totalPagos = pagosCocina.reduce((s, g) => s + (g.Importe || 0), 0);
+  const cantPagos = pagosCocina.length;
+
+  const diff = Math.abs(totalVentas - totalPagos);
+  const iguales = diff < 1;
+  const base = totalVentas > totalPagos ? totalVentas : totalPagos;
+  const comision = base * 0.10;
+
+  // Mes del período
+  const mes = 'Abril 2026';
+
+  const listaPagos = pagosCocina.map(p =>
+    `<div class="pagos-list-row"><span>${p.Fecha} — ${p.Comentario || 'Cocina del día'}</span><span>${fmt(p.Importe)}</span></div>`
+  ).join('');
+
+  const alertaLinea = iguales
+    ? '✅ Ventas y pagos coinciden.'
+    : `⚠️ Las ventas (${fmt(totalVentas)}) superan los pagos (${fmt(totalPagos)}) por ${fmt(diff)}. Se calculó la comisión sobre las ventas.`;
+
+  const mensajeTexto =
+`Hola! Te paso el resumen de cocina de ${mes}:
+
+🍳 Total de ventas del mes: ${fmt(totalVentas)}
+💸 Total de pagos registrados: ${fmt(totalPagos)} (${cantPagos} pagos)
+${alertaLinea}
+
+💰 Comisión a cobrar (10%): ${fmt(comision)}
+
+Quedamos a disposición para coordinar el pago. ¡Gracias!`;
+
+  document.getElementById('cocinaContenido').innerHTML = `
+    <div class="cocina-row">
+      <span class="cocina-label">Ventas COCINA del mes</span>
+      <span class="cocina-val green">${fmt(totalVentas)}</span>
+    </div>
+    <div class="cocina-row">
+      <span class="cocina-label">Pagos registrados (${cantPagos} pagos)</span>
+      <span class="cocina-val orange">${fmt(totalPagos)}</span>
+    </div>
+    <div class="pagos-list">${listaPagos}</div>
+    <div class="alerta-box ${iguales ? 'alerta-ok' : 'alerta-warn'}">
+      ${iguales
+        ? '✅ Los montos <strong>coinciden</strong>. Comisión sobre ese valor.'
+        : `⚠️ Los montos <strong>no coinciden</strong>. Diferencia: <strong>${fmt(diff)}</strong>. Se usa el mayor (ventas) como base.`}
+    </div>
+    <div class="cocina-row" style="margin-top:4px">
+      <span class="cocina-label" style="font-weight:700;color:var(--text)">💰 Comisión a cobrar (10%)</span>
+      <span class="cocina-val green" style="font-size:1rem;font-weight:700">${fmt(comision)}</span>
+    </div>
+    <div style="font-size:0.71rem;color:var(--muted);padding:4px 0 12px">
+      Base: ${fmt(base)} ${totalVentas > totalPagos ? '— ventas (mayor valor)' : '— pagos abonados'}
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--border);padding-top:12px;margin-bottom:6px">Mensaje para enviar</div>
+    <div class="mensaje-box" id="mensajeCocina">${mensajeTexto}</div>
+    <button class="copy-btn" onclick="copiarMensaje()">📋 Copiar mensaje</button>
+  `;
+  document.getElementById('cocinaOverlay').classList.add('open');
+}
+
+function cerrarCocina() {
+  document.getElementById('cocinaOverlay').classList.remove('open');
+}
+
+function copiarMensaje() {
+  const texto = document.getElementById('mensajeCocina').innerText;
+  navigator.clipboard.writeText(texto).catch(() => {
+    const el = document.getElementById('mensajeCocina');
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+  });
+  const btn = document.querySelector('.copy-btn');
+  btn.textContent = '✓ ¡Copiado!';
+  setTimeout(() => btn.textContent = '📋 Copiar mensaje', 2000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+buildSidebar();
+
+// Mensaje de bienvenida
+addMessage('ai', `¡Hola! Soy tu agente financiero 🏟️<br><br>
+Ya tengo cargados los datos completos de <span class="highlight">Abril 2026</span>:<br><br>
+💰 <b>Ventas:</b> <span class="highlight">${fmt(totalGeneral)}</span> — ${catSorted.length} rubros, ${DATA.length} productos<br>
+💸 <b>Gastos:</b> <span class="highlight">${fmt(totalGastos)}</span> — ${Object.keys(gastosPorCat).length} categorías, ${GASTOS.length} registros<br>
+📊 <b>Resultado neto:</b> <span class="highlight" style="color:${totalGeneral > totalGastos ? 'var(--green)' : '#ff6b35'}">${fmt(totalGeneral - totalGastos)}</span><br><br>
+Podés preguntarme sobre ventas, gastos, sueldos, compras, margen o cualquier análisis financiero. ¿Por dónde arrancamos?`);
+</script>
+</body>
+</html>
