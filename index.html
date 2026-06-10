@@ -970,6 +970,19 @@ function abrirCafeteria() {
 
   const balance = totalVentas - totalCostos;
   const positivo = balance >= 0;
+  const comision = totalVentas * 0.50;
+  const mes = periodoActivo.label;
+
+  const mensajeTexto =
+`Hola Florencia! Te paso el resumen de cafetería de ${mes}:
+
+☕ Total de ventas del mes: ${fmt(totalVentas)}
+💸 Total costos (Capsulandia + Kuresza): ${fmt(totalCostos)}
+📊 Balance neto cafetería: ${fmt(balance)}
+
+💰 Comisión a cobrar (50% sobre ventas): ${fmt(comision)}
+
+Quedamos a disposición para coordinar el pago. ¡Gracias!`;
 
   document.getElementById('cafeteriaContenido').innerHTML = `
     <div class="modal-section-title">Ventas cafetería</div>
@@ -990,8 +1003,32 @@ function abrirCafeteria() {
       <span class="label">Balance cafetería</span>
       <span class="val ${positivo?'green':'red'}">${fmt(balance)}</span>
     </div>
+
+    <div class="cocina-row" style="margin-top:8px">
+      <span class="cocina-label" style="font-weight:700;color:var(--text)">💰 Comisión Florencia Paz (50%)</span>
+      <span class="cocina-val green" style="font-size:1rem;font-weight:700">${fmt(comision)}</span>
+    </div>
+
+    <div style="font-size:0.72rem;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid var(--border);padding-top:12px;margin:12px 0 6px">Mensaje para enviar</div>
+    <div class="mensaje-box" id="mensajeCafeteria">${mensajeTexto}</div>
+    <button class="copy-btn" onclick="copiarMensajeCafeteria()">📋 Copiar mensaje</button>
   `;
   document.getElementById('cafeteriaOverlay').classList.add('open');
+}
+
+function copiarMensajeCafeteria() {
+  const texto = document.getElementById('mensajeCafeteria').innerText;
+  navigator.clipboard.writeText(texto).catch(() => {
+    const el = document.getElementById('mensajeCafeteria');
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(r);
+    document.execCommand('copy');
+  });
+  const btn = document.querySelector('#cafeteriaContenido .copy-btn');
+  btn.textContent = '✓ ¡Copiado!';
+  setTimeout(() => btn.textContent = '📋 Copiar mensaje', 2000);
 }
 
 // ── COCINA ───────────────────────────────────────────────────────────
