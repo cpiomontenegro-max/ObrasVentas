@@ -970,7 +970,7 @@ function abrirCafeteria() {
 
   const balance = totalVentas - totalCostos;
   const positivo = balance >= 0;
-  const comision = totalVentas * 0.50;
+  const comision = balance * 0.50;
   const mes = periodoActivo.label;
 
   const mensajeTexto =
@@ -980,9 +980,7 @@ function abrirCafeteria() {
 💸 Total costos (Capsulandia + Kuresza): ${fmt(totalCostos)}
 📊 Balance neto cafetería: ${fmt(balance)}
 
-💰 Comisión a cobrar (50% sobre ventas): ${fmt(comision)}
-
-Quedamos a disposición para coordinar el pago. ¡Gracias!`;
+💰 Comisión a cobrar (50% sobre balance): ${fmt(comision)}`;
 
   document.getElementById('cafeteriaContenido').innerHTML = `
     <div class="modal-section-title">Ventas cafetería</div>
@@ -1005,7 +1003,7 @@ Quedamos a disposición para coordinar el pago. ¡Gracias!`;
     </div>
 
     <div class="cocina-row" style="margin-top:8px">
-      <span class="cocina-label" style="font-weight:700;color:var(--text)">💰 Comisión Florencia Paz (50%)</span>
+      <span class="cocina-label" style="font-weight:700;color:var(--text)">💰 Comisión Florencia Paz (50% balance)</span>
       <span class="cocina-val green" style="font-size:1rem;font-weight:700">${fmt(comision)}</span>
     </div>
 
@@ -1063,9 +1061,7 @@ function abrirCocina() {
 💸 Total de pagos registrados: ${fmt(totalPagos)} (${cantPagos} pagos)
 ${alertaLinea}
 
-💰 Comisión a cobrar (10%): ${fmt(comision)}
-
-Quedamos a disposición para coordinar el pago. ¡Gracias!`;
+💰 Comisión a cobrar (10%): ${fmt(comision)}`;
 
   document.getElementById('cocinaContenido').innerHTML = `
     <div class="cocina-row">
