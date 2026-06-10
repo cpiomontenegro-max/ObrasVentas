@@ -730,6 +730,10 @@ function abrirCantina() {
     ventasPorCat[c] = total;
     totalVentas += total;
   });
+  // Agua Caliente pertenece a Cafetería pero se contabiliza en Cantina
+  const aguaCaliente = DATA.filter(d => d.Nombre === 'Agua Caliente').reduce((s,d) => s + (d.Total||0), 0);
+  ventasPorCat['Cafetería (Agua Caliente)'] = aguaCaliente;
+  totalVentas += aguaCaliente;
 
   // Gastos Compra excluyendo proveedores de otros paneles
   const pagosCompra = GASTOS.filter(g => {
@@ -957,7 +961,7 @@ function abrirInversion() {
 
 // ── PANEL CAFETERÍA ──────────────────────────────────────────────────
 function abrirCafeteria() {
-  const ventasCafe = DATA.filter(d => d.Categoria === 'Cafetería');
+  const ventasCafe = DATA.filter(d => d.Categoria === 'Cafetería' && d.Nombre !== 'Agua Caliente');
   const totalVentas = ventasCafe.reduce((s,d) => s + (d.Total||0), 0);
   const filasVentas = ventasCafe.sort((a,b)=>b.Total-a.Total).map(v =>
     `<div class="pagos-list-row"><span>${v.Nombre}</span><span>${fmt(v.Total)}</span></div>`
