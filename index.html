@@ -696,15 +696,18 @@ Gastos: Compra=mercadería, Sueldos=personal, Inversión=activos, Cocina=insumos
 }
 
 // ── MAPA DE CATEGORÍAS ───────────────────────────────────────────────
+// Proveedores excluidos del cálculo de cantina (tienen panel propio)
+const EXCLUIR_CANTINA = ['neron', 'el carnes s.a', 'carnes el triunfo', 'carancho', 'capsulandia', 'panificadora kuresza'];
+
 // Qué categorías de venta tienen panel y cuál abren
 const CAT_PANEL = {
   'COCINA':            () => abrirCocina(),
-  'Bebidas':           () => abrirCompras(),
-  'Accesorios Padel':  () => abrirCompras(),
-  'Snacks':            () => abrirCompras(),
-  'Almacen':           () => abrirCompras(),
-  'Comida':            () => abrirCompras(),
-  'CARNES':          () => abrirCARNES(),
+  'Bebidas':           () => abrirCantina(),
+  'Accesorios Padel':  () => abrirAccesorios(),
+  'Snacks':            () => abrirCantina(),
+  'Almacen':           () => abrirCantina(),
+  'Comida':            () => abrirCantina(),
+  'CARNES':            () => abrirCARNES(),
   'Turno padel':       () => abrirTurnos(),
   'Alquileres':        () => abrirTurnos(),
   'Inversión':         () => abrirInversion(),
@@ -973,14 +976,29 @@ function abrirCafeteria() {
   const comision = balance * 0.50;
   const mes = periodoActivo.label;
 
+  // Detalle ventas por producto
+  const lineasVentas = ventasCafe.sort((a,b)=>b.Total-a.Total)
+    .map(v => `${v.Nombre} — ${fmt(v.Total)}`).join('\n');
+
+  // Detalle costos por proveedor (agrupado)
+  const provMap = {};
+  costos.forEach(g => { const p = g.Proveedor||'Varios'; provMap[p] = (provMap[p]||0) + g.Importe; });
+  const lineasCostos = Object.entries(provMap).sort((a,b)=>b[1]-a[1])
+    .map(([p,v]) => `${p} — ${fmt(v)}`).join('\n');
+
   const mensajeTexto =
-`Hola Florencia! Te paso el resumen de cafetería de ${mes}:
+`Te paso el resumen de cafetería de ${mes}:
 
-☕ Total de ventas del mes: ${fmt(totalVentas)}
-💸 Total costos (Capsulandia + Kuresza): ${fmt(totalCostos)}
-📊 Balance neto cafetería: ${fmt(balance)}
+Ventas cafetería
+${lineasVentas}
+Total ventas — ${fmt(totalVentas)}
 
-💰 Comisión a cobrar (50% sobre balance): ${fmt(comision)}`;
+Costos
+${lineasCostos}
+Total costos — ${fmt(totalCostos)}
+
+Balance neto — ${fmt(balance)}
+Comisión (50%) — ${fmt(comision)}`;
 
   document.getElementById('cafeteriaContenido').innerHTML = `
     <div class="modal-section-title">Ventas cafetería</div>
