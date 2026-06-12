@@ -145,72 +145,68 @@
   .cat-stats { display:flex; justify-content:space-between; align-items: center; }
   .cat-monto { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--text); font-weight: 700; }
   .cat-pct { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); background: #f3f4f6; padding: 1px 5px; border-radius: 3px; }
-  /* Chat area */
-  .chat-area { display: flex; flex-direction: column; overflow: hidden; background: #f9f9f9; }
-  .messages {
+  /* Resumen area */
+  .resumen-area {
     flex: 1; overflow-y: auto;
-    padding: 20px 28px;
-    display: flex; flex-direction: column; gap: 14px;
+    padding: 28px 32px;
+    background: #f9f9f9;
+    display: flex; flex-direction: column; gap: 20px;
   }
-  .message { display: flex; gap: 10px; max-width: 820px; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-  .message.user { align-self: flex-end; flex-direction: row-reverse; }
-  .avatar {
-    width: 32px; height: 32px; border-radius: 8px;
-    display: flex; align-items:center; justify-content:center;
-    font-size: 0.85rem; flex-shrink:0; font-weight:800;
+  .resumen-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
   }
-  .avatar.ai { background: #111111; color: white; }
-  .avatar.user { background: var(--accent); color: white; }
-  .bubble {
+  .resumen-card {
     background: #ffffff;
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 0.87rem;
-    line-height: 1.65;
-    color: var(--text);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    padding: 20px 22px;
+    display: flex; flex-direction: column;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   }
-  .message.user .bubble { background: var(--accent); color: white; border-color: var(--accent); }
-  .bubble table { width:100%; border-collapse:collapse; margin-top: 10px; }
-  .bubble th { font-size: 0.65rem; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; text-align:left; padding: 5px 8px; border-bottom: 2px solid var(--border); font-weight:700; }
-  .bubble td { font-family:'Space Mono',monospace; font-size:0.75rem; padding: 5px 8px; border-bottom: 1px solid var(--border); }
-  .bubble td.monto { color: var(--green); font-weight:700; }
-  .bubble td.rank { color: var(--accent); font-weight:700; }
-  .bubble .highlight { color: var(--accent); font-weight:700; }
-  .bubble .tip { margin-top:8px; font-size:0.78rem; color:var(--muted); border-top: 1px solid var(--border); padding-top:8px; }
-  /* Input */
-  .input-area {
-    padding: 12px 28px; border-top: 1px solid var(--border);
-    display: flex; gap: 10px; background: #ffffff;
+  .resumen-card-title {
+    font-size: 0.8rem; font-weight: 800; color: var(--text);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
   }
-  .suggestions { padding: 0 28px 10px; display: flex; flex-wrap: wrap; gap: 6px; background: #ffffff; border-bottom: 1px solid var(--border); }
-  .suggestion-btn {
-    font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight:600;
-    background: #f5f5f5; border: 1px solid var(--border);
-    color: var(--muted); padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s;
+  .resumen-list { display: flex; flex-direction: column; gap: 12px; }
+  .resumen-row { display: flex; flex-direction: column; gap: 6px; }
+  .resumen-row-name { font-size: 0.82rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+  .resumen-icon { font-size: 0.85rem; }
+  .resumen-bar-wrap { height: 4px; background: #f3f4f6; border-radius: 2px; }
+  .resumen-bar { height: 4px; border-radius: 2px; background: var(--green); width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+  .resumen-bar.gastos { background: var(--accent); }
+  .resumen-row-stats { display: flex; justify-content: space-between; align-items: center; }
+  .resumen-monto { font-family: 'Space Mono', monospace; font-size: 0.78rem; font-weight: 700; color: var(--text); }
+  .resumen-pct { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); background: #f3f4f6; padding: 1px 6px; border-radius: 3px; }
+  .resumen-card-total {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 16px; padding-top: 14px; border-top: 2px solid var(--border);
+    font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text);
   }
-  .suggestion-btn:hover { border-color: var(--accent); color: var(--accent); background: #eff6ff; }
-  input[type=text] {
-    flex: 1; background: #f5f5f5; border: 1px solid var(--border);
-    border-radius: 8px; padding: 10px 16px; color: var(--text);
-    font-family: 'Inter', sans-serif; font-size: 0.88rem; outline: none; transition: all 0.15s;
+  .resumen-total-val { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; }
+  .resumen-total-val.verde { color: var(--green); }
+  .resumen-total-val.azul { color: var(--accent); }
+  .resumen-subtotales {
+    margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);
+    display: flex; flex-direction: column; gap: 6px;
   }
-  input[type=text]:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-  input[type=text]::placeholder { color: #aaa; }
-  .send-btn {
-    background: var(--accent); color: white; border: none; border-radius: 8px;
-    padding: 10px 20px; font-family: 'Inter', sans-serif;
-    font-weight: 800; font-size: 0.82rem; cursor: pointer; transition: all 0.15s;
-    white-space: nowrap; letter-spacing: 0.03em; text-transform: uppercase;
+  .resumen-subtotal-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.74rem; font-weight: 600; color: var(--muted);
   }
-  .send-btn:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
-  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-  .typing { display: flex; gap: 5px; align-items:center; padding: 8px 4px; }
-  .typing span { width:7px; height:7px; border-radius:50%; background: var(--accent); animation: bounce 1.2s infinite; }
-  .typing span:nth-child(2){animation-delay:0.2s} .typing span:nth-child(3){animation-delay:0.4s}
-  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+  .resumen-subtotal-val { font-family: 'Space Mono', monospace; font-size: 0.78rem; font-weight: 700; color: var(--text); }
+  .resumen-neto-card {
+    background: #111111; border-radius: 12px;
+    padding: 20px 26px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .resumen-neto-label { font-size: 0.85rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 0.06em; }
+  .resumen-neto-val { font-family: 'Space Mono', monospace; font-size: 1.3rem; font-weight: 700; }
+  .resumen-neto-val.positivo { color: #4ade80; }
+  .resumen-neto-val.negativo { color: #f87171; }
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: #f5f5f5; }
   ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
@@ -418,21 +414,39 @@
     <div id="catCards"></div>
   </aside>
 
-  <!-- Chat -->
-  <div class="chat-area">
-    <div class="messages" id="messages"></div>
-    <div class="suggestions" id="suggestions">
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuál fue el resultado neto de abril?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuánto gasté en sueldos?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuáles son los rubros más vendidos?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuánto gasté en compras de mercadería?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">Top 5 productos más vendidos</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this)">¿Cuál fue mi mayor gasto del mes?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion(this, 'Hacé la rendición de cocina: mostrá el total vendido por el rubro Cocina, detallá los gastos de cocina del mes, calculá el resultado neto de cocina y aplicá una comisión del 10% sobre las ventas de cocina. Indicá claramente el monto a cobrar como comisión.')">Rendición de cocina (comisión 10%)</button>
+  <!-- Resumen -->
+  <div class="resumen-area">
+    <div class="resumen-grid">
+      <div class="resumen-card">
+        <div class="resumen-card-title">💰 Ventas por rubro</div>
+        <div class="resumen-list" id="resumenVentasList"></div>
+        <div class="resumen-card-total">
+          <span>Total Ventas</span>
+          <span class="resumen-total-val verde" id="resumenVentasTotal"></span>
+        </div>
+      </div>
+      <div class="resumen-card">
+        <div class="resumen-card-title">💸 Gastos por tipo</div>
+        <div class="resumen-list" id="resumenGastosList"></div>
+        <div class="resumen-subtotales">
+          <div class="resumen-subtotal-row">
+            <span>GASTOS (Operativos + Compras)</span>
+            <span class="resumen-subtotal-val" id="resumenSubtotalGastos"></span>
+          </div>
+          <div class="resumen-subtotal-row">
+            <span>Recupero / Inversión</span>
+            <span class="resumen-subtotal-val" id="resumenRecuperoInversion"></span>
+          </div>
+        </div>
+        <div class="resumen-card-total">
+          <span>Total Gastos</span>
+          <span class="resumen-total-val azul" id="resumenGastosTotal"></span>
+        </div>
+      </div>
     </div>
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Preguntá sobre tus ventas..." onkeydown="if(event.key==='Enter') sendMessage()" />
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()">Enviar</button>
+    <div class="resumen-neto-card">
+      <span class="resumen-neto-label">Resultado Neto</span>
+      <span class="resumen-neto-val" id="resumenNeto"></span>
     </div>
   </div>
 </div>
@@ -477,9 +491,8 @@ function setPeriodo(id) {
   // Limpiar sidebar y reconstruir
   document.getElementById('catCards').innerHTML = '';
   buildSidebar();
-  // Limpiar chat
-  document.getElementById('messages').innerHTML = '';
-  mostrarBienvenida();
+  // Reconstruir panel de resumen
+  buildResumen();
 }
 
 // ── HELPERS ─────────────────────────────────────────────────────────
@@ -538,21 +551,44 @@ function buildSidebar() {
     </div>`;
   container.appendChild(totalsRow);
 
-  catSorted.forEach(([cat, data]) => {
+  // Unificar Bebidas + Snacks + Almacen + Comida + Accesorios Padel en "CANTINA"
+  const CANTINA_CATS = ['Bebidas', 'Snacks', 'Almacen', 'Comida', 'Accesorios Padel'];
+  // Unificar Turno padel + Alquileres en "ALQUILERES"
+  const TURNOS_CATS = ['Turno padel', 'Alquileres'];
+
+  let sidebarItems = catSorted.filter(([cat]) => !CANTINA_CATS.includes(cat) && !TURNOS_CATS.includes(cat));
+
+  const cantinaTotal = catSorted
+    .filter(([cat]) => CANTINA_CATS.includes(cat))
+    .reduce((s, [, data]) => s + data.total, 0);
+  if (cantinaTotal > 0) {
+    sidebarItems.push(['CANTINA', { total: cantinaTotal }]);
+  }
+
+  const alquileresTotal = catSorted
+    .filter(([cat]) => TURNOS_CATS.includes(cat))
+    .reduce((s, [, data]) => s + data.total, 0);
+  if (alquileresTotal > 0) {
+    sidebarItems.push(['ALQUILERES', { total: alquileresTotal }]);
+  }
+
+  sidebarItems.sort((a, b) => b[1].total - a[1].total);
+  const maxSidebarTotal = Math.max(...sidebarItems.map(([, data]) => data.total));
+
+  sidebarItems.forEach(([cat, data]) => {
     const pct = (data.total / totalGeneral * 100).toFixed(1);
-    const barWidth = (data.total / maxCatTotal * 100).toFixed(1);
-    const tienePanel = CAT_PANEL.hasOwnProperty(cat);
+    const barWidth = (data.total / maxSidebarTotal * 100).toFixed(1);
+    const tienePanel = cat === 'CANTINA' || cat === 'ALQUILERES' || CAT_PANEL.hasOwnProperty(cat);
     const card = document.createElement('div');
     card.className = 'cat-card' + (tienePanel ? '' : ' disabled');
     const iconos = {
-      'COCINA': '🍳', 'Bebidas': '🥤', 'Accesorios Padel': '🎾',
-      'Snacks': '🍿', 'Almacen': '🏪', 'Comida': '🍦',
-      'CARNES': '🥩', 'Turno padel': '🏟️', 'Alquileres': '🔑',
-      'Cafetería': '☕', 'Inversión': '💰'
+      'COCINA': '🍳', 'CANTINA': '🍺', 'CARNES': '🥩',
+      'ALQUILERES': '🏟️', 'Cafetería': '☕', 'Inversión': '💰'
     };
     const icono = iconos[cat] || '📦';
+    const nombre = cat.toUpperCase();
     card.innerHTML = `
-      <div class="cat-name"><span class="cat-icon">${icono}</span>${cat}${tienePanel ? '' : ' <span style="font-size:0.58rem;color:var(--muted);font-weight:400;opacity:0.6">—</span>'}</div>
+      <div class="cat-name"><span class="cat-icon">${icono}</span>${nombre}${tienePanel ? '' : ' <span style="font-size:0.58rem;color:var(--muted);font-weight:400;opacity:0.6">—</span>'}</div>
       <div class="cat-bar-wrap"><div class="cat-bar" style="width:0%" data-width="${barWidth}%"></div></div>
       <div class="cat-stats">
         <span class="cat-monto">${fmt(data.total)}</span>
@@ -562,7 +598,9 @@ function buildSidebar() {
       card.addEventListener('click', () => {
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-        CAT_PANEL[cat]();
+        if (cat === 'CANTINA') abrirCantina();
+        else if (cat === 'ALQUILERES') abrirTurnos();
+        else CAT_PANEL[cat]();
       });
     }
     container.appendChild(card);
@@ -575,129 +613,88 @@ function buildSidebar() {
   }, 100);
 }
 
-// ── CHAT ──────────────────────────────────────────────────────────────
-const history = [];
-let isLoading = false;
+// ── PANEL RESUMEN (ventas + gastos) ─────────────────────────────────
+const GASTOS_OPERATIVOS = ['Operativo', 'Sueldos', 'Impuestos', 'Infraestructuras', 'Alquiler', 'Cocina'];
+const ICONOS_RESUMEN = {
+  'COCINA': '🍳', 'Bebidas': '🥤', 'Accesorios Padel': '🎾',
+  'Snacks': '🍿', 'Almacen': '🏪', 'Comida': '🍦',
+  'CARNES': '🥩', 'Turno padel': '🏟️', 'Alquileres': '🔑',
+  'Cafetería': '☕', 'Inversión': '💰'
+};
 
-function addMessage(role, html) {
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = `message ${role}`;
-  const avatarIcon = role === 'ai' ? '🤖' : '👤';
-  div.innerHTML = `
-    <div class="avatar ${role}">${avatarIcon}</div>
-    <div class="bubble">${html}</div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
-}
+function buildResumen() {
+  // -- Ventas por rubro --
+  const ventasList = document.getElementById('resumenVentasList');
+  ventasList.innerHTML = catSorted.map(([cat, data]) => {
+    const pct = (data.total / totalGeneral * 100).toFixed(1);
+    const barWidth = (data.total / maxCatTotal * 100).toFixed(1);
+    const icono = ICONOS_RESUMEN[cat] || '📦';
+    return `
+      <div class="resumen-row">
+        <div class="resumen-row-name"><span class="resumen-icon">${icono}</span>${cat}</div>
+        <div class="resumen-bar-wrap"><div class="resumen-bar" style="width:0%" data-width="${barWidth}%"></div></div>
+        <div class="resumen-row-stats">
+          <span class="resumen-monto">${fmt(data.total)}</span>
+          <span class="resumen-pct">${pct}%</span>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('resumenVentasTotal').textContent = fmt(totalGeneral);
 
-function addTyping() {
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'message ai';
-  div.id = 'typing-indicator';
-  div.innerHTML = `<div class="avatar ai">🤖</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
+  // -- Gastos agrupados: Operativos / Compras / Inversión --
+  let totalOperativos = 0, totalCompras = 0, totalInversion = 0;
+  Object.entries(gastosPorCat).forEach(([cat, data]) => {
+    const catKey = (cat || '').trim();
+    if (catKey === 'Compra') totalCompras += data.total;
+    else if (catKey === 'Inversión') totalInversion += data.total;
+    else totalOperativos += data.total; // operativos + categorías no mapeadas
+  });
 
-function removeTyping() {
-  const el = document.getElementById('typing-indicator');
-  if (el) el.remove();
-}
+  const gruposGastos = [
+    { nombre: 'Gastos Operativos', icono: '⚙️', total: totalOperativos },
+    { nombre: 'Compras (Mercadería)', icono: '🛒', total: totalCompras },
+    { nombre: 'Gastos de Inversión', icono: '💰', total: totalInversion },
+  ];
+  const maxGastoGrupo = Math.max(...gruposGastos.map(g => g.total), 1);
 
-async function sendMessage() {
-  if (isLoading) return;
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  doSend(text);
-}
+  const gastosList = document.getElementById('resumenGastosList');
+  gastosList.innerHTML = gruposGastos.map(g => {
+    const pct = totalGastos > 0 ? (g.total / totalGastos * 100).toFixed(1) : '0.0';
+    const barWidth = (g.total / maxGastoGrupo * 100).toFixed(1);
+    return `
+      <div class="resumen-row">
+        <div class="resumen-row-name"><span class="resumen-icon">${g.icono}</span>${g.nombre}</div>
+        <div class="resumen-bar-wrap"><div class="resumen-bar gastos" style="width:0%" data-width="${barWidth}%"></div></div>
+        <div class="resumen-row-stats">
+          <span class="resumen-monto">${fmt(g.total)}</span>
+          <span class="resumen-pct">${pct}%</span>
+        </div>
+      </div>`;
+  }).join('');
 
-function sendSuggestion(btn, override) {
-  const text = override || btn.textContent;
-  doSend(text);
-}
+  // -- Subtotales --
+  document.getElementById('resumenSubtotalGastos').textContent = fmt(totalOperativos + totalCompras);
+  document.getElementById('resumenRecuperoInversion').textContent = fmt(totalInversion);
+  document.getElementById('resumenGastosTotal').textContent = fmt(totalGastos);
 
-async function doSend(text) {
-  if (isLoading) return;
-  isLoading = true;
-  document.getElementById('sendBtn').disabled = true;
-  document.getElementById('suggestions').style.display = 'none';
+  // -- Resultado neto --
+  const neto = totalGeneral - totalGastos;
+  const netoEl = document.getElementById('resumenNeto');
+  netoEl.textContent = fmt(neto);
+  netoEl.classList.remove('positivo', 'negativo');
+  netoEl.classList.add(neto >= 0 ? 'positivo' : 'negativo');
 
-  addMessage('user', text);
-  history.push({ role: 'user', content: text });
-
-  addTyping();
-
-  // Contexto de datos para el sistema
-  const dataContext = JSON.stringify(catSorted.map(([cat, d]) => ({
-    categoria: cat,
-    total: d.total,
-    cantidad: d.cantidad,
-    productos: d.items.map(i => ({ nombre: i.Nombre, cantidad: i.Cantidad, total: i.Total }))
-  })));
-
-  const gastosPorCat = GASTOS.reduce((acc, g) => {
-    const cat = g['Categoría'] || 'Sin categoría';
-    if (!acc[cat]) acc[cat] = { total: 0, items: [] };
-    acc[cat].total += g.Importe || 0;
-    acc[cat].items.push(g);
-    return acc;
-  }, {});
-  const totalGastos = GASTOS.reduce((s, g) => s + (g.Importe || 0), 0);
-  const gastosResumen = Object.entries(gastosPorCat).sort((a,b)=>b[1].total-a[1].total).map(([cat, d]) => ({
-    categoria: cat, total: d.total, registros: d.items.length
-  }));
-
-  const systemPrompt = `Sos un agente analista financiero para un club deportivo argentino.
-Tenés acceso a VENTAS y GASTOS de ${periodoActivo.label}. Respondé siempre en español, claro y útil.
-Usá HTML con th/td para tablas. Usá <span class="highlight"> para cifras clave. Usá <div class="tip"> para recomendaciones.
-Los montos son en pesos argentinos.
-
-=== VENTAS: ${JSON.stringify(catSorted.map(([cat, d]) => ({cat, total: d.total, qty: d.cantidad})))} | TOTAL: $${Math.round(totalGeneral).toLocaleString('es-AR')} ===
-=== GASTOS: ${JSON.stringify(gastosResumen)} | TOTAL: $${Math.round(totalGastos).toLocaleString('es-AR')} ===
-=== RESULTADO NETO: $${Math.round(totalGeneral - totalGastos).toLocaleString('es-AR')} ===
-Gastos: Compra=mercadería, Sueldos=personal, Inversión=activos, Cocina=insumos diarios, Operativo=servicios/mantenimiento.`;
-
-  const apiKey = '';
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: history
-      })
+  // Animar barras del resumen
+  setTimeout(() => {
+    document.querySelectorAll('.resumen-bar').forEach(b => {
+      b.style.width = b.dataset.width;
     });
-    const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    const reply = data.content?.map(c => c.text || '').join('') || 'No pude procesar la respuesta.';
-    history.push({ role: 'assistant', content: reply });
-    removeTyping();
-    addMessage('ai', reply);
-  } catch(e) {
-    removeTyping();
-    addMessage('ai', `Error: ${e.message || 'No se pudo conectar con el agente. Verificá tu API Key.'}`);
-  }
-
-  isLoading = false;
-  document.getElementById('sendBtn').disabled = false;
+  }, 100);
 }
 
 // ── MAPA DE CATEGORÍAS ───────────────────────────────────────────────
 // Proveedores excluidos del cálculo de cantina (tienen panel propio)
-const EXCLUIR_CANTINA = ['neron', 'el carnes s.a', 'carnes el triunfo', 'carancho', 'capsulandia', 'panificadora kuresza'];
+const EXCLUIR_CANTINA = ['el carnes s.a', 'carnes el triunfo', 'carancho', 'capsulandia', 'panificadora kuresza'];
 
 // Qué categorías de venta tienen panel y cuál abren
 const CAT_PANEL = {
@@ -721,7 +718,7 @@ function cerrarModal(id) {
 
 // ── PANEL CANTINA ────────────────────────────────────────────────────
 function abrirCantina() {
-  const cats = ['Bebidas','Snacks','Almacen','Comida'];
+  const cats = ['Bebidas','Snacks','Almacen','Comida','Accesorios Padel'];
   const ventasPorCat = {};
   let totalVentas = 0;
   cats.forEach(c => {
@@ -1138,15 +1135,6 @@ function copiarMensaje() {
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────
-function mostrarBienvenida() {
-  addMessage('ai', `¡Hola! Soy tu agente financiero 🏟️<br><br>
-Datos cargados: <span class="highlight">${periodoActivo.label}</span><br><br>
-💰 <b>Ventas:</b> <span class="highlight">${fmt(totalGeneral)}</span> — ${catSorted.length} rubros, ${DATA.length} productos<br>
-💸 <b>Gastos:</b> <span class="highlight">${fmt(totalGastos)}</span> — ${Object.keys(gastosPorCat).length} categorías, ${GASTOS.length} registros<br>
-📊 <b>Resultado neto:</b> <span class="highlight" style="color:${totalGeneral > totalGastos ? 'var(--green)' : '#ff6b35'}">${fmt(totalGeneral - totalGastos)}</span><br><br>
-Podés preguntarme sobre ventas, gastos, sueldos, compras o cualquier análisis. ¿Por dónde arrancamos?`);
-}
-
 function initPeriodoNav() {
   const nav = document.getElementById('periodoNav');
   // Mantener el label
@@ -1164,7 +1152,7 @@ function initPeriodoNav() {
 recalcular();
 initPeriodoNav();
 buildSidebar();
-mostrarBienvenida();
+buildResumen();
 </script>
 </body>
 </html>
